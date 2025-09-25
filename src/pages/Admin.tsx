@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Plus, Edit, Trash2, Car, Home } from 'lucide-react';
+import { v4 as uuidv4 } from 'uuid';
 import { Badge } from '@/components/ui/badge';
 
 interface Listing {
@@ -35,6 +36,9 @@ const Admin = () => {
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(false);
   const [editingListing, setEditingListing] = useState<Listing | null>(null);
+  const [isUploadingImages, setIsUploadingImages] = useState(false);
+  const [uploadedImageUrls, setUploadedImageUrls] = useState<string[]>([]);
+  const [dragActive, setDragActive] = useState(false);
   
   // Form state
   const [formData, setFormData] = useState({
@@ -95,6 +99,75 @@ const Admin = () => {
       featured: false,
     });
     setEditingListing(null);
+    setUploadedImageUrls([]);
+    setDragActive(false);
+  };
+
+  const handleFilesSelected = async (fileList: FileList | null) => {
+    if (!fileList || fileList.length === 0) return;
+    const files = Array.from(fileList);
+    setIsUploadingImages(true);
+    try {
+      const bucket = 'listing-images';
+      const newUrls: string[] = [];
+      for (const file of files) {
+        const filePath = `${user?.id || 'anon'}/${uuidv4()}-${file.name}`;
+        const { error: uploadError } = await supabase.storage.from(bucket).upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+        if (uploadError) {
+          throw uploadError;
+        }
+        const { data: publicUrlData } = supabase.storage.from(bucket).getPublicUrl(filePath);
+        if (publicUrlData?.publicUrl) {
+          newUrls.push(publicUrlData.publicUrl);
+        }
+      }
+      setUploadedImageUrls(prev => [...prev, ...newUrls]);
+      // Reflect in the textarea fallback so submit works without extra logic
+      setFormData(prev => ({
+        ...prev,
+        images: [...new Set([...(prev.images ? prev.images.split(',').map(s => s.trim()).filter(Boolean) : []), ...newUrls])].join(', '),
+      }));
+      toast({ title: 'Upload complete', description: `${files.length} image(s) uploaded.` });
+    } catch (err: any) {
+      toast({ title: 'Image upload failed', description: err?.message || 'Please try again', variant: 'destructive' });
+    } finally {
+      setIsUploadingImages(false);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    handleFilesSelected(e.dataTransfer.files);
+  };
+
+  const removeUploadedUrl = (url: string) => {
+    setUploadedImageUrls(prev => prev.filter(u => u !== url));
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean)
+        .filter(u => u !== url)
+        .join(', '),
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -159,6 +232,7 @@ const Admin = () => {
       whatsapp_number: listing.whatsapp_number,
       featured: listing.featured,
     });
+    setUploadedImageUrls(listing.images || []);
     setEditingListing(listing);
   };
 
@@ -286,13 +360,56 @@ const Admin = () => {
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium">Images (comma-separated URLs)</label>
-                    <Textarea
-                      value={formData.images}
-                      onChange={(e) => setFormData(prev => ({ ...prev, images: e.target.value }))}
-                      placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg"
-                      rows={2}
-                    />
+                    <label className="text-sm font-medium">Images</label>
+                    <div
+                      className={`mt-2 border-2 border-dashed rounded-md p-6 text-center transition-colors ${dragActive ? 'border-primary bg-primary/5' : 'border-muted-foreground/30'}`}
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onDrop={handleDrop}
+                    >
+                      <p className="text-sm text-muted-foreground">
+                        Drag & drop images here, or click to select
+                      </p>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        className="mt-3"
+                        onChange={(e) => handleFilesSelected(e.target.files)}
+                      />
+                      {isUploadingImages && (
+                        <div className="mt-3 flex items-center justify-center text-sm">
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Uploading...
+                        </div>
+                      )}
+                    </div>
+
+                    {uploadedImageUrls.length > 0 && (
+                      <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {uploadedImageUrls.map((url) => (
+                          <div key={url} className="relative group">
+                            <img src={url} alt="uploaded" className="h-24 w-full object-cover rounded" />
+                            <button
+                              type="button"
+                              onClick={() => removeUploadedUrl(url)}
+                              className="absolute top-1 right-1 text-xs bg-background/80 border rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="mt-4">
+                      <label className="text-xs font-medium text-muted-foreground">Or paste image URLs (optional)</label>
+                      <Textarea
+                        value={formData.images}
+                        onChange={(e) => setFormData(prev => ({ ...prev, images: e.target.value }))}
+                        placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg"
+                        rows={2}
+                      />
+                    </div>
                   </div>
 
                   <div>

@@ -56,14 +56,33 @@ const ListingModal = ({ listing, isOpen, onClose }: ListingModalProps) => {
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Image Gallery Placeholder */}
-          <div className="relative h-64 md:h-80 bg-muted rounded-lg overflow-hidden flex items-center justify-center">
-            {listing.type === 'car' ? (
-              <Car className="h-20 w-20 text-muted-foreground" />
-            ) : (
-              <Home className="h-20 w-20 text-muted-foreground" />
-            )}
-          </div>
+          {/* Image Gallery */}
+          {listing.images && listing.images.length > 0 ? (
+            <div>
+              <div className="relative h-64 md:h-80 bg-muted rounded-lg overflow-hidden">
+                <img
+                  src={listing.images[0]}
+                  alt={listing.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              {listing.images.length > 1 && (
+                <div className="mt-3 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+                  {listing.images.slice(1).map((img, idx) => (
+                    <img key={idx} src={img} alt={`${listing.title} ${idx+2}`} className="h-16 w-full object-cover rounded" />
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="relative h-64 md:h-80 bg-muted rounded-lg overflow-hidden flex items-center justify-center">
+              {listing.type === 'car' ? (
+                <Car className="h-20 w-20 text-muted-foreground" />
+              ) : (
+                <Home className="h-20 w-20 text-muted-foreground" />
+              )}
+            </div>
+          )}
 
           {/* Description */}
           <div>

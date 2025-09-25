@@ -38,13 +38,22 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
         onClick={() => onViewDetails(listing)}
       >
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-smooth" />
-        <div className="w-full h-full bg-muted flex items-center justify-center">
-          {listing.type === 'car' ? (
-            <Car className="h-16 w-16 text-muted-foreground" />
-          ) : (
-            <Home className="h-16 w-16 text-muted-foreground" />
-          )}
-        </div>
+        {listing.images && listing.images.length > 0 ? (
+          <img
+            src={listing.images[0]}
+            alt={listing.title}
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full bg-muted flex items-center justify-center">
+            {listing.type === 'car' ? (
+              <Car className="h-16 w-16 text-muted-foreground" />
+            ) : (
+              <Home className="h-16 w-16 text-muted-foreground" />
+            )}
+          </div>
+        )}
       </div>
 
       <CardContent className="p-4" onClick={() => onViewDetails(listing)}>
