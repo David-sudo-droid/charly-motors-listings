@@ -13,6 +13,7 @@ import { Loader2, Plus, Edit, Trash2, Car, Home, Upload, AlertCircle, ArrowLeft,
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import ImageUpload from '@/components/ImageUpload';
+import LocalImageUpload from '@/components/LocalImageUpload';
 
 interface Listing {
   id: string;
