@@ -5,7 +5,7 @@ import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Search, Car, Home } from "lucide-react";
+import { Loader2, Search, Car, Home, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -119,41 +119,44 @@ export const ListingsGrid = () => {
           </p>
         </div>
 
-        {/* Search and Filters */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by title or location..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          
-          <div className="flex gap-2">
-            <Button
-              variant={filterType === 'all' ? 'default' : 'outline'}
-              onClick={() => setFilterType('all')}
-            >
-              All
-            </Button>
-            <Button
-              variant={filterType === 'car' ? 'default' : 'outline'}
-              onClick={() => setFilterType('car')}
-            >
-              <Car className="h-4 w-4 mr-2" />
-              Cars
-            </Button>
-            <Button
-              variant={filterType === 'property' ? 'default' : 'outline'}
-              onClick={() => setFilterType('property')}
-            >
-              <Home className="h-4 w-4 mr-2" />
-              Properties
-            </Button>
-          </div>
+      {/* Enhanced Search and Filters with better styling */}
+      <div className="flex flex-col md:flex-row gap-4 mb-8 animate-fade-in">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search by title or location..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 shadow-sm border-border/50 focus:border-primary/50 transition-all"
+          />
         </div>
+        
+        <div className="flex gap-2">
+          <Button
+            variant={filterType === 'all' ? 'default' : 'outline'}
+            onClick={() => setFilterType('all')}
+            className="transition-all duration-300 hover:scale-105"
+          >
+            All <Badge variant="secondary" className="ml-2">{listings.length}</Badge>
+          </Button>
+          <Button
+            variant={filterType === 'car' ? 'default' : 'outline'}
+            onClick={() => setFilterType('car')}
+            className="transition-all duration-300 hover:scale-105"
+          >
+            <Car className="h-4 w-4 mr-2" />
+            Cars <Badge variant="secondary" className="ml-2">{listings.filter(l => l.type === 'car').length}</Badge>
+          </Button>
+          <Button
+            variant={filterType === 'property' ? 'default' : 'outline'}
+            onClick={() => setFilterType('property')}
+            className="transition-all duration-300 hover:scale-105"
+          >
+            <Home className="h-4 w-4 mr-2" />
+            Properties <Badge variant="secondary" className="ml-2">{listings.filter(l => l.type === 'property').length}</Badge>
+          </Button>
+        </div>
+      </div>
 
         {filteredListings.length === 0 ? (
           <div className="text-center py-12">
@@ -165,38 +168,43 @@ export const ListingsGrid = () => {
           </div>
         ) : (
           <>
-            {/* Featured Listings */}
+            {/* Featured Listings with enhanced styling */}
             {featuredListings.length > 0 && (
-              <div className="mb-12">
+              <div className="mb-12 animate-slide-up">
                 <div className="flex items-center gap-2 mb-6">
-                  <h3 className="text-2xl font-bold">Featured Listings</h3>
-                  <Badge className="bg-accent text-accent-foreground">Premium</Badge>
+                  <h3 className="text-2xl font-bold gradient-text">Featured Listings</h3>
+                  <Badge className="bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg">
+                    <Star className="w-3 h-3 mr-1" />
+                    Premium
+                  </Badge>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {featuredListings.map((listing) => (
-                    <ListingCard
-                      key={listing.id}
-                      listing={listing}
-                      onViewDetails={handleViewDetails}
-                    />
+                  {featuredListings.map((listing, index) => (
+                    <div key={listing.id} className="animate-scale-in" style={{ animationDelay: `${index * 0.1}s` }}>
+                      <ListingCard
+                        listing={listing}
+                        onViewDetails={handleViewDetails}
+                      />
+                    </div>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Regular Listings */}
+            {/* Regular Listings with staggered animation */}
             {regularListings.length > 0 && (
-              <div>
+              <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
                 <h3 className="text-2xl font-bold mb-6">
                   {featuredListings.length > 0 ? "All Listings" : "Our Listings"}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {regularListings.map((listing) => (
-                    <ListingCard
-                      key={listing.id}
-                      listing={listing}
-                      onViewDetails={handleViewDetails}
-                    />
+                  {regularListings.map((listing, index) => (
+                    <div key={listing.id} className="animate-scale-in" style={{ animationDelay: `${(index + featuredListings.length) * 0.1}s` }}>
+                      <ListingCard
+                        listing={listing}
+                        onViewDetails={handleViewDetails}
+                      />
+                    </div>
                   ))}
                 </div>
               </div>

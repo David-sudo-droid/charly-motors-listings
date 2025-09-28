@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Plus, Edit, Trash2, Car, Home, Upload, AlertCircle, ArrowLeft, Star, Eye, Calendar, MapPin } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Label } from '@/components/ui/label';
 import ImageUpload from '@/components/ImageUpload';
 import LocalImageUpload from '@/components/LocalImageUpload';
 
@@ -479,18 +480,37 @@ const Admin = () => {
                   </div>
 
                   <div className="md:col-span-2">
-                    <label className="text-sm font-medium flex items-center gap-2 mb-4">
-                      <Upload className="w-4 h-4" />
-                      Upload Images
-                    </label>
-                    <ImageUpload
-                      images={formData.images}
-                      onImagesChange={(images) => setFormData(prev => ({ ...prev, images }))}
-                      maxImages={8}
-                    />
-                  </div>
+                    <div className="space-y-4">
+                      <Label>Images</Label>
+                      
+                      {/* Enhanced image upload with tabs */}
+                      <div className="border rounded-lg p-4 space-y-4">
+                        <div className="flex items-center gap-4 text-sm">
+                          <Badge variant="outline">Option 1: Upload Local Files</Badge>
+                          <span className="text-muted-foreground">or</span>
+                          <Badge variant="outline">Option 2: Image URLs</Badge>
+                        </div>
+                        
+                        {/* Local Image Upload */}
+                        <LocalImageUpload
+                          images={formData.images}
+                          onImagesChange={(newImages) => setFormData({...formData, images: newImages})}
+                          maxImages={10}
+                        />
+                        
+                        {/* URL Upload (fallback) */}
+                        <div className="pt-4 border-t">
+                          <Label className="text-sm text-muted-foreground">Or add image URLs manually:</Label>
+                          <ImageUpload
+                            images={formData.images}
+                            onImagesChange={(newImages) => setFormData({...formData, images: newImages})}
+                          />
+                        </div>
+                      </div>
+                     </div>
+                   </div>
 
-                  <div>
+                   <div>
                     <label className="text-sm font-medium">Description</label>
                     <Textarea
                       value={formData.description}

@@ -154,9 +154,39 @@ All colors MUST be HSL. Professional automotive & real estate branding.
     transition: var(--transition-bounce);
   }
 
-  /* Listing Card Hover Effects */
+  /* Enhanced Component Styles */
   .listing-card {
     @apply transition-smooth hover:shadow-card hover:-translate-y-1;
+  }
+
+  /* Search Section Animations */
+  .search-card {
+    @apply animate-fade-in;
+  }
+
+  /* Button Hover Effects */
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-hover text-primary-foreground font-semibold shadow-lg hover:shadow-xl transition-all duration-300;
+  }
+
+  /* Card Animations */
+  .card-hover {
+    @apply hover:shadow-elegant hover:-translate-y-1 transition-all duration-300;
+  }
+
+  /* Search Filter Tags */
+  .filter-tag {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors cursor-pointer;
+  }
+
+  /* Gradient Text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+  }
+
+  /* Enhanced shadows for premium feel */
+  .shadow-premium {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
 
   /* WhatsApp Button Styling */
