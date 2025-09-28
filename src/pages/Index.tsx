@@ -4,26 +4,15 @@ import SearchSection from "@/components/SearchSection";
 import ListingsGrid from "@/components/ListingsGrid";
 
 const Index = () => {
-  const handleSearch = (type: 'car' | 'property', filters: any) => {
-    // Smooth scroll to listings section
-    const listingsSection = document.getElementById('listings');
-    listingsSection?.scrollIntoView({ behavior: 'smooth' });
-    
-    // You can add actual search logic here
-    console.log('Search:', { type, filters });
-  };
-
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <Hero />
       
-      {/* Enhanced Search Section */}
-      <SearchSection onSearch={handleSearch} />
-      
       {/* Cars Section */}
       <section id="cars" className="py-16">
         <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12">Our Vehicle Collection</h2>
           <ListingsGrid />
         </div>
       </section>

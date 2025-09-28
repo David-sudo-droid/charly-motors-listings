@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, Car, Home, MapPin, DollarSign, Calendar, Filter, TrendingUp } from "lucide-react";
+import { Search, Car, Home, MapPin, DollarSign, Calendar, Filter } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface SearchFilters {
@@ -115,22 +115,20 @@ const SearchSection = ({ onSearch }: SearchSectionProps) => {
             Search through our extensive collection of premium vehicles and properties
           </p>
           
-          {/* Live Stats with trend indicators */}
-          <div className="flex justify-center gap-6 mb-8 animate-fade-in">
-            <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border">
+          {/* Live Stats */}
+          <div className="flex justify-center gap-6 mb-8">
+            <div className="flex items-center gap-2">
               <Car className="w-5 h-5 text-primary" />
               <span className="font-semibold">{stats.cars}</span>
               <span className="text-muted-foreground">Cars</span>
-              <TrendingUp className="w-3 h-3 text-green-500" />
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border">
+            <div className="flex items-center gap-2">
               <Home className="w-5 h-5 text-primary" />
               <span className="font-semibold">{stats.properties}</span>
               <span className="text-muted-foreground">Properties</span>
-              <TrendingUp className="w-3 h-3 text-green-500" />
             </div>
-            <Badge variant="secondary" className="px-4 py-2 text-base font-semibold bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20">
-              {stats.total} Total Active Listings
+            <Badge variant="secondary" className="px-3 py-1">
+              {stats.total} Total Listings
             </Badge>
           </div>
         </div>
