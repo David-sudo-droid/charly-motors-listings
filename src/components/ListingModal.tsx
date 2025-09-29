@@ -56,13 +56,31 @@ const ListingModal = ({ listing, isOpen, onClose }: ListingModalProps) => {
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Image Gallery Placeholder */}
-          <div className="relative h-64 md:h-80 bg-muted rounded-lg overflow-hidden flex items-center justify-center">
-            {listing.type === 'car' ? (
-              <Car className="h-20 w-20 text-muted-foreground" />
-            ) : (
-              <Home className="h-20 w-20 text-muted-foreground" />
-            )}
+          {/* Image Display */}
+          <div className="relative h-64 md:h-96 bg-muted rounded-lg overflow-hidden">
+            {listing.images && listing.images.length > 0 ? (
+              <img
+                src={listing.images[0]}
+                alt={listing.title}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  // Show fallback if image fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  const fallback = target.parentElement?.querySelector('.fallback-icon') as HTMLElement;
+                  if (fallback) fallback.style.display = 'flex';
+                }}
+              />
+            ) : null}
+            
+            {/* Fallback icon (hidden by default) */}
+            <div className="fallback-icon absolute inset-0 flex items-center justify-center bg-muted" style={{ display: listing.images && listing.images.length > 0 ? 'none' : 'flex' }}>
+              {listing.type === 'car' ? (
+                <Car className="h-20 w-20 text-muted-foreground" />
+              ) : (
+                <Home className="h-20 w-20 text-muted-foreground" />
+              )}
+            </div>
           </div>
 
           {/* Description */}

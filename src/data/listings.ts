@@ -24,7 +24,7 @@ export const sampleListings: Listing[] = [
     price: 3200000,
     currency: "KSH",
     location: "Nairobi, Kenya",
-    images: ["/placeholder-car1.jpg"],
+    images: ["https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=800&h=600&fit=crop"],
     description: "Excellent condition Toyota Camry 2020 with low mileage. Perfect for daily commuting and long trips. Well maintained with full service history.",
     features: ["Leather Seats", "Sunroof", "Navigation System", "Backup Camera", "Bluetooth"],
     specifications: {
@@ -45,7 +45,7 @@ export const sampleListings: Listing[] = [
     price: 3800000,
     currency: "KSH",
     location: "Mombasa, Kenya",
-    images: ["/placeholder-car2.jpg"],
+    images: ["https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&h=600&fit=crop"],
     description: "Spacious and reliable Honda CR-V perfect for families. AWD system for all weather conditions. Excellent fuel economy.",
     features: ["AWD", "7 Seats", "Cruise Control", "Heated Seats", "Premium Audio"],
     specifications: {
@@ -66,7 +66,7 @@ export const sampleListings: Listing[] = [
     price: 4200000,
     currency: "KSH",
     location: "Kisumu, Kenya",
-    images: ["/placeholder-car3.jpg"],
+    images: ["https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&h=600&fit=crop"],
     description: "Modern Nissan X-Trail with advanced safety features and exceptional comfort. Perfect for urban and off-road adventures.",
     features: ["360° Camera", "Lane Assist", "Emergency Braking", "Wireless Charging", "LED Headlights"],
     specifications: {
@@ -89,7 +89,7 @@ export const sampleListings: Listing[] = [
     price: 18000000,
     currency: "KSH",
     location: "Kilimani, Nairobi",
-    images: ["/placeholder-house1.jpg"],
+    images: ["https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop"],
     description: "Luxurious 3-bedroom apartment in the heart of Kilimani. Modern finishes, spacious rooms, and great amenities. Perfect for families or investment.",
     features: ["Swimming Pool", "Gym", "24/7 Security", "Parking", "Balcony", "Modern Kitchen"],
     specifications: {
@@ -110,7 +110,7 @@ export const sampleListings: Listing[] = [
     price: 45000000,
     currency: "KSH",
     location: "Karen, Nairobi",
-    images: ["/placeholder-house2.jpg"],
+    images: ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop"],
     description: "Stunning 4-bedroom family home in prestigious Karen. Large compound, modern amenities, and excellent security. Move-in ready.",
     features: ["Large Garden", "Swimming Pool", "Servant Quarter", "Double Garage", "Solar Power", "Borehole"],
     specifications: {
@@ -131,7 +131,7 @@ export const sampleListings: Listing[] = [
     price: 120000000,
     currency: "KSH",
     location: "Nairobi CBD",
-    images: ["/placeholder-commercial.jpg"],
+    images: ["https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=600&fit=crop"],
     description: "Prime commercial building in Nairobi CBD. Excellent rental income potential. Fully occupied with established tenants.",
     features: ["Prime Location", "Elevator", "Parking", "24/7 Security", "High-Speed Internet", "Generator Backup"],
     specifications: {
