@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { MapPin, MessageCircle, X, Car, Home, ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { Listing } from "@/data/listings";
-import { supabase } from "@/integrations/supabase/client";
+import { incrementInquiryCount } from "@/lib/supabase-helpers";
 
 interface ListingModalProps {
   listing: Listing | null;
@@ -71,7 +71,7 @@ const ListingModal = ({ listing, isOpen, onClose }: ListingModalProps) => {
   const handleWhatsAppClick = async () => {
     // Track inquiry analytics
     try {
-      await supabase.rpc('increment_inquiry_count', { listing_uuid: listing.id });
+      await incrementInquiryCount(listing.id);
     } catch (error) {
       console.error('Error tracking inquiry:', error);
     }

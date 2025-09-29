@@ -16,6 +16,7 @@ import {
   DollarSign,
   Activity
 } from 'lucide-react';
+import { getListingAnalytics, getTotalUsersCount } from '@/lib/supabase-helpers';
 
 interface DashboardStats {
   totalListings: number;
@@ -52,21 +53,19 @@ const AdminDashboard = () => {
     setLoading(true);
     try {
       // Fetch basic stats
-      const [listingsResult, analyticsResult, usersResult] = await Promise.all([
+      const [listingsResult, analytics, totalUsers] = await Promise.all([
         supabase.from('listings').select('*'),
-        supabase.from('listing_analytics').select('*'),
-        supabase.rpc('get_total_users_count')
+        getListingAnalytics(),
+        getTotalUsersCount()
       ]);
 
       if (listingsResult.error) throw listingsResult.error;
-      if (analyticsResult.error) throw analyticsResult.error;
 
       const listings = listingsResult.data || [];
-      const analytics = analyticsResult.data || [];
 
-      // Calculate stats
-      const totalViews = analytics.reduce((sum, item) => sum + (item.view_count || 0), 0);
-      const totalInquiries = analytics.reduce((sum, item) => sum + (item.inquiry_count || 0), 0);
+      // Calculate stats from analytics
+      const totalViews = analytics.reduce((sum: number, item: any) => sum + (item.view_count || 0), 0);
+      const totalInquiries = analytics.reduce((sum: number, item: any) => sum + (item.inquiry_count || 0), 0);
       
       const oneWeekAgo = new Date();
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
@@ -81,22 +80,15 @@ const AdminDashboard = () => {
         featuredCount: listings.filter(l => l.featured).length,
         totalViews,
         totalInquiries,
-        totalUsers: usersResult.data || 0,
+        totalUsers: totalUsers,
         recentListings
       });
 
-      // Get popular listings
+      // Get popular listings with analytics
       const popularListingsQuery = await supabase
         .from('listings')
-        .select(`
-          id,
-          title,
-          type,
-          price,
-          currency,
-          listing_analytics(view_count, inquiry_count)
-        `)
-        .order('listing_analytics(view_count)', { ascending: false })
+        .select('id, title, type, price, currency')
+        .order('created_at', { ascending: false })
         .limit(5);
 
       if (popularListingsQuery.data) {
@@ -106,8 +98,8 @@ const AdminDashboard = () => {
           type: item.type,
           price: item.price,
           currency: item.currency,
-          view_count: item.listing_analytics?.[0]?.view_count || 0,
-          inquiry_count: item.listing_analytics?.[0]?.inquiry_count || 0,
+          view_count: analytics.find((a: any) => a.listing_id === item.id)?.view_count || 0,
+          inquiry_count: analytics.find((a: any) => a.listing_id === item.id)?.inquiry_count || 0,
         }));
         setPopularListings(popularData);
       }

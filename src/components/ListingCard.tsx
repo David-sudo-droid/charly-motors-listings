@@ -6,8 +6,8 @@ import { Listing } from "@/data/listings";
 import { useState } from "react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
 import { useComparison } from "@/hooks/useComparison";
+import { incrementViewCount, incrementInquiryCount } from "@/lib/supabase-helpers";
 
 interface ListingCardProps {
   listing: Listing;
@@ -33,7 +33,7 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
     
     // Track inquiry analytics
     try {
-      await supabase.rpc('increment_inquiry_count', { listing_uuid: listing.id });
+      await incrementInquiryCount(listing.id);
     } catch (error) {
       console.error('Error tracking inquiry:', error);
     }
@@ -77,7 +77,7 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
     
     // Track view analytics
     try {
-      await supabase.rpc('increment_view_count', { listing_uuid: listing.id });
+      await incrementViewCount(listing.id);
     } catch (error) {
       console.error('Error tracking view:', error);
     }
@@ -88,7 +88,10 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
   const handleCompareClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
     console.log('Adding to comparison:', listing.title);
-    const success = addToComparison(listing);
+    const success = addToComparison({ 
+      ...listing, 
+      specifications: listing.specifications || {} 
+    });
     console.log('Add to comparison result:', success);
   };
 

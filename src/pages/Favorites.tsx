@@ -117,22 +117,25 @@ const Favorites = () => {
   const handleClearAllFavorites = async () => {
     if (!user) return;
 
-    const { error } = await supabase
-      .from('user_favorites')
-      .delete()
-      .eq('user_id', user.id);
+    try {
+      const { error } = await supabase
+        .from('user_favorites')
+        .delete()
+        .eq('user_id', user.id);
 
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to clear favorites",
-        variant: "destructive",
-      });
-    } else {
+      if (error) throw error;
+
       setFavoriteListings([]);
       toast({
         title: "Success",
         description: "All favorites cleared",
+      });
+    } catch (error) {
+      console.error('Error clearing favorites:', error);
+      toast({
+        title: "Error", 
+        description: "Failed to clear favorites",
+        variant: "destructive",
       });
     }
   };
