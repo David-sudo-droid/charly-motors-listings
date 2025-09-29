@@ -196,6 +196,7 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
             variant="secondary" 
             size="sm" 
             className="bg-white/90 backdrop-blur-sm text-primary hover:bg-white"
+            onClick={handleViewDetails}
           >
             <Eye className="w-4 h-4 mr-2" />
             Quick View
