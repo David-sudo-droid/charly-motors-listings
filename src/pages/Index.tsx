@@ -2,8 +2,19 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import SearchSection from "@/components/SearchSection";
 import ListingsGrid from "@/components/ListingsGrid";
+import ComparisonBar from "@/components/ComparisonBar";
+import ComparisonModal from "@/components/ComparisonModal";
+import { useComparison } from "@/hooks/useComparison";
 
 const Index = () => {
+  const { 
+    comparisonItems, 
+    removeFromComparison, 
+    clearComparison, 
+    isOpen, 
+    closeComparison 
+  } = useComparison();
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -94,6 +105,16 @@ const Index = () => {
           </div>
         </div>
       </footer>
+
+      {/* Comparison Components */}
+      <ComparisonBar />
+      <ComparisonModal
+        isOpen={isOpen}
+        onClose={closeComparison}
+        items={comparisonItems}
+        onRemove={removeFromComparison}
+        onClear={clearComparison}
+      />
     </div>
   );
 };

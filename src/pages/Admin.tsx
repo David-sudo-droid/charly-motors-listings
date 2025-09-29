@@ -9,11 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Edit, Trash2, Car, Home, Upload, AlertCircle, ArrowLeft, Star, Eye, Calendar, MapPin } from 'lucide-react';
+import { Loader2, Plus, Edit, Trash2, Car, Home, Upload, AlertCircle, ArrowLeft, Star, Eye, Calendar, MapPin, BarChart3 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import ImageUpload from '@/components/ImageUpload';
 import LocalImageUpload from '@/components/LocalImageUpload';
+import AdminDashboard from '@/components/AdminDashboard';
 
 interface Listing {
   id: string;
@@ -374,8 +375,12 @@ const Admin = () => {
           </Alert>
         </div>
 
-        <Tabs defaultValue="create" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 bg-background/50 backdrop-blur-sm border border-border/50">
+        <Tabs defaultValue="dashboard" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3 bg-background/50 backdrop-blur-sm border border-border/50">
+            <TabsTrigger value="dashboard" className="flex items-center data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Dashboard
+            </TabsTrigger>
             <TabsTrigger value="create" className="flex items-center data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Plus className="w-4 h-4 mr-2" />
               {editingListing ? 'Edit' : 'Create'} Listing
@@ -384,6 +389,10 @@ const Admin = () => {
               Manage Listings ({listings.length})
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="dashboard">
+            <AdminDashboard />
+          </TabsContent>
 
           <TabsContent value="create">
             <Card className="bg-background/50 backdrop-blur-sm border-border/50 shadow-lg">

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Car, Home, Menu, X, LogIn, LogOut, User, Settings } from "lucide-react";
+import { Car, Home, Menu, X, LogIn, LogOut, User, Settings, Heart } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
@@ -74,6 +74,12 @@ export const Header = () => {
         <div className="hidden md:flex items-center space-x-4">
           {user ? (
             <>
+              <Link to="/favorites">
+                <Button variant="ghost" size="sm">
+                  <Heart className="h-4 w-4 mr-2" />
+                  Favorites
+                </Button>
+              </Link>
               <span className="text-sm text-muted-foreground">
                 Welcome, {user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'}
                 {isAdmin && <span className="ml-1 text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded">Admin</span>}
@@ -127,6 +133,12 @@ export const Header = () => {
                   Welcome, {user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'}
                   {isAdmin && <span className="ml-2 text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded">Admin</span>}
                 </div>
+                <Link to="/favorites" onClick={() => setIsMenuOpen(false)}>
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <Heart className="h-4 w-4 mr-2" />
+                    Favorites
+                  </Button>
+                </Link>
                 <Button variant="outline" size="sm" className="w-full" onClick={handleSignOut}>
                   <LogOut className="h-4 w-4 mr-2" />
                   Sign Out

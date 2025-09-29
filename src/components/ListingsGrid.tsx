@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import ListingCard from "./ListingCard";
 import ListingModal from "./ListingModal";
-import { Input } from "./ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import AdvancedSearchFilters, { AdvancedFilters } from "./AdvancedSearchFilters";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Search, Car, Home } from "lucide-react";
+import { Loader2, Search, Car, Home, Filter, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Listing {
   id: string;
@@ -28,10 +28,25 @@ export const ListingsGrid = () => {
   const [listings, setListings] = useState<Listing[]>([]);
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filterType, setFilterType] = useState<'all' | 'car' | 'property'>('all');
-  const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
   const { toast } = useToast();
+
+  const [filters, setFilters] = useState<AdvancedFilters>({
+    searchQuery: '',
+    type: 'all',
+    location: '',
+    priceMin: 0,
+    priceMax: 50000000,
+    yearMin: undefined,
+    yearMax: undefined,
+    condition: [],
+    transmission: [],
+    fuelType: [],
+    propertyType: [],
+    bedrooms: '',
+    features: []
+  });
 
   useEffect(() => {
     fetchListings();
@@ -82,28 +97,106 @@ export const ListingsGrid = () => {
     setSelectedListing(null);
   };
 
-  const filteredListings = listings.filter((listing) => {
-    const matchesType = filterType === "all" || listing.type === filterType;
-    const matchesSearch = 
-      listing.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      listing.location.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesType && matchesSearch;
-  });
+  const filteredListings = useMemo(() => {
+    return listings.filter((listing) => {
+      // Type filter
+      const matchesType = filters.type === 'all' || listing.type === filters.type;
+      
+      // Search query
+      const matchesSearch = !filters.searchQuery || 
+        listing.title.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
+        listing.location.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
+        listing.description?.toLowerCase().includes(filters.searchQuery.toLowerCase());
+      
+      // Location filter
+      const matchesLocation = !filters.location ||
+        listing.location.toLowerCase().includes(filters.location.toLowerCase());
+      
+      // Price filter
+      const matchesPrice = listing.price >= filters.priceMin && listing.price <= filters.priceMax;
+      
+      // Year filter (for cars)
+      const matchesYear = !filters.yearMin && !filters.yearMax ? true :
+        (listing.specifications?.year ? 
+          (!filters.yearMin || listing.specifications.year >= filters.yearMin) &&
+          (!filters.yearMax || listing.specifications.year <= filters.yearMax)
+          : true);
+      
+      // Condition filter
+      const matchesCondition = filters.condition.length === 0 ||
+        (listing.specifications?.condition && filters.condition.includes(listing.specifications.condition));
+      
+      // Transmission filter
+      const matchesTransmission = filters.transmission.length === 0 ||
+        (listing.specifications?.transmission && filters.transmission.includes(listing.specifications.transmission));
+      
+      // Fuel type filter
+      const matchesFuelType = filters.fuelType.length === 0 ||
+        (listing.specifications?.fuelType && filters.fuelType.includes(listing.specifications.fuelType));
+      
+      // Property type filter
+      const matchesPropertyType = filters.propertyType.length === 0 ||
+        (listing.specifications?.propertyType && filters.propertyType.includes(listing.specifications.propertyType));
+      
+      // Bedrooms filter
+      const matchesBedrooms = !filters.bedrooms ||
+        (listing.specifications?.bedrooms && listing.specifications.bedrooms.toString() === filters.bedrooms);
+      
+      // Features filter
+      const matchesFeatures = filters.features.length === 0 ||
+        filters.features.every(feature => listing.features.includes(feature));
+      
+      return matchesType && matchesSearch && matchesLocation && matchesPrice && 
+             matchesYear && matchesCondition && matchesTransmission && 
+             matchesFuelType && matchesPropertyType && matchesBedrooms && matchesFeatures;
+    });
+  }, [listings, filters]);
 
   const featuredListings = filteredListings.filter(listing => listing.featured);
   const regularListings = filteredListings.filter(listing => !listing.featured);
 
-  if (loading) {
-    return (
-      <section id="listings" className="py-16 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-center items-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin" />
-            <span className="ml-2">Loading listings...</span>
-          </div>
+  const handleSearch = () => {
+    // The filtering is already reactive through useMemo
+    setShowFilters(false);
+  };
+
+  const handleResetFilters = () => {
+    setFilters({
+      searchQuery: '',
+      type: 'all',
+      location: '',
+      priceMin: 0,
+      priceMax: 50000000,
+      yearMin: undefined,
+      yearMax: undefined,
+      condition: [],
+      transmission: [],
+      fuelType: [],
+      propertyType: [],
+      bedrooms: '',
+      features: []
+    });
+  };
+
+  const LoadingSkeleton = () => (
+    <section id="listings" className="py-16 bg-background">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="space-y-4">
+              <Skeleton className="h-56 w-full" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-4 w-1/2" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          ))}
         </div>
-      </section>
-    );
+      </div>
+    </section>
+  );
+
+  if (loading) {
+    return <LoadingSkeleton />;
   }
 
   return (
@@ -119,40 +212,91 @@ export const ListingsGrid = () => {
           </p>
         </div>
 
-        {/* Search and Filters */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by title or location..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          
-          <div className="flex gap-2">
-            <Button
-              variant={filterType === 'all' ? 'default' : 'outline'}
-              onClick={() => setFilterType('all')}
-            >
-              All
+        {/* Advanced Search Filters */}
+        <div className="mb-8">
+          {!showFilters ? (
+            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between p-4 bg-muted/50 rounded-lg">
+              <div className="flex items-center gap-4 flex-1">
+                <div className="relative flex-1 max-w-md">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="Quick search..."
+                    value={filters.searchQuery}
+                    onChange={(e) => setFilters({ ...filters, searchQuery: e.target.value })}
+                    className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Badge 
+                    variant={filters.type === 'all' ? 'default' : 'outline'}
+                    className="cursor-pointer"
+                    onClick={() => setFilters({ ...filters, type: 'all' })}
+                  >
+                    All ({listings.length})
+                  </Badge>
+                  <Badge 
+                    variant={filters.type === 'car' ? 'default' : 'outline'}
+                    className="cursor-pointer"
+                    onClick={() => setFilters({ ...filters, type: 'car' })}
+                  >
+                    <Car className="h-3 w-3 mr-1" />
+                    Cars ({listings.filter(l => l.type === 'car').length})
+                  </Badge>
+                  <Badge 
+                    variant={filters.type === 'property' ? 'default' : 'outline'}
+                    className="cursor-pointer"
+                    onClick={() => setFilters({ ...filters, type: 'property' })}
+                  >
+                    <Home className="h-3 w-3 mr-1" />
+                    Properties ({listings.filter(l => l.type === 'property').length})
+                  </Badge>
+                </div>
+              </div>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowFilters(true)}
+                className="flex items-center gap-2"
+              >
+                <Filter className="h-4 w-4" />
+                Advanced Filters
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold">Search & Filter</h3>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => setShowFilters(false)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              <AdvancedSearchFilters
+                filters={filters}
+                onFiltersChange={setFilters}
+                onSearch={handleSearch}
+                onReset={handleResetFilters}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Results Summary */}
+        <div className="flex items-center justify-between mb-6">
+          <p className="text-muted-foreground">
+            Showing {filteredListings.length} of {listings.length} listings
+          </p>
+          {(filters.searchQuery || filters.location || filters.condition.length > 0 || 
+            filters.transmission.length > 0 || filters.fuelType.length > 0 || 
+            filters.propertyType.length > 0 || filters.features.length > 0) && (
+            <Button variant="ghost" size="sm" onClick={handleResetFilters}>
+              <X className="h-4 w-4 mr-2" />
+              Clear all filters
             </Button>
-            <Button
-              variant={filterType === 'car' ? 'default' : 'outline'}
-              onClick={() => setFilterType('car')}
-            >
-              <Car className="h-4 w-4 mr-2" />
-              Cars
-            </Button>
-            <Button
-              variant={filterType === 'property' ? 'default' : 'outline'}
-              onClick={() => setFilterType('property')}
-            >
-              <Home className="h-4 w-4 mr-2" />
-              Properties
-            </Button>
-          </div>
+          )}
         </div>
 
         {filteredListings.length === 0 ? (
