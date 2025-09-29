@@ -4,6 +4,7 @@ import SearchSection from "@/components/SearchSection";
 import ListingsGrid from "@/components/ListingsGrid";
 import ComparisonBar from "@/components/ComparisonBar";
 import ComparisonModal from "@/components/ComparisonModal";
+import ComparisonDebug from "@/components/ComparisonDebug";
 import { useComparison } from "@/hooks/useComparison";
 
 const Index = () => {
@@ -107,6 +108,7 @@ const Index = () => {
       </footer>
 
       {/* Comparison Components */}
+      <ComparisonDebug />
       <ComparisonBar />
       <ComparisonModal
         isOpen={isOpen}

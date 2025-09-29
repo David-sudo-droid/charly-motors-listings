@@ -17,8 +17,8 @@ const ComparisonBar = () => {
   if (count === 0) return null;
 
   return (
-    <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 animate-in slide-in-from-bottom-2">
-      <Card className="shadow-2xl border-2 border-primary/20 bg-background/95 backdrop-blur-sm">
+    <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[9999] animate-in slide-in-from-bottom-2" style={{zIndex: 9999}}>
+      <Card className="shadow-2xl border-2 border-primary/20 bg-background/95 backdrop-blur-sm max-w-4xl">
         <CardContent className="p-4">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">

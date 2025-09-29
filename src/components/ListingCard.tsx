@@ -87,7 +87,9 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
 
   const handleCompareClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    addToComparison(listing);
+    console.log('Adding to comparison:', listing.title);
+    const success = addToComparison(listing);
+    console.log('Add to comparison result:', success);
   };
 
   return (
