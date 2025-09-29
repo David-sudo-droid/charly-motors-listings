@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,13 +22,17 @@ const ListingModal = ({ listing, isOpen, onClose }: ListingModalProps) => {
   const hasImages = images.length > 0;
   const hasMultipleImages = images.length > 1;
 
-  const nextImage = useCallback(() => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length);
-  }, [images.length]);
+  const nextImage = () => {
+    if (images.length > 0) {
+      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+    }
+  };
 
-  const prevImage = useCallback(() => {
-    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
-  }, [images.length]);
+  const prevImage = () => {
+    if (images.length > 0) {
+      setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+    }
+  };
 
   const goToImage = (index: number) => {
     setCurrentImageIndex(index);
@@ -58,7 +62,7 @@ const ListingModal = ({ listing, isOpen, onClose }: ListingModalProps) => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, hasMultipleImages, prevImage, nextImage]);
+  }, [isOpen, hasMultipleImages, images.length]);
 
   const formatPrice = (price: number, currency: string) => {
     return new Intl.NumberFormat('en-KE', {
