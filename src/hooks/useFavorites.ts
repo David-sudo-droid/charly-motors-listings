@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { getUserFavorites, addUserFavorite, removeUserFavorite } from '@/lib/supabase-helpers';
 
 export const useFavorites = (userId: string | undefined) => {
   const [favorites, setFavorites] = useState<string[]>([]);
@@ -14,19 +14,22 @@ export const useFavorites = (userId: string | undefined) => {
     }
     
     setLoading(true);
-    try {
-      const data = await getUserFavorites(userId);
-      setFavorites(data.map((item: any) => item.listing_id));
-    } catch (error) {
+    const { data, error } = await supabase
+      .from('user_favorites')
+      .select('listing_id')
+      .eq('user_id', userId);
+
+    if (error) {
       console.error('Error fetching favorites:', error);
       toast({
         title: "Error",
         description: "Failed to load favorites",
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
+    } else if (data) {
+      setFavorites(data.map(item => item.listing_id));
     }
+    setLoading(false);
   };
 
   const toggleFavorite = async (listingId: string) => {
@@ -44,7 +47,14 @@ export const useFavorites = (userId: string | undefined) => {
     try {
       if (isFavorited) {
         // Remove favorite
-        await removeUserFavorite(userId, listingId);
+        const { error } = await supabase
+          .from('user_favorites')
+          .delete()
+          .eq('user_id', userId)
+          .eq('listing_id', listingId);
+        
+        if (error) throw error;
+        
         setFavorites(prev => prev.filter(id => id !== listingId));
         toast({
           title: "Removed from favorites",
@@ -52,7 +62,12 @@ export const useFavorites = (userId: string | undefined) => {
         });
       } else {
         // Add favorite
-        await addUserFavorite(userId, listingId);
+        const { error } = await supabase
+          .from('user_favorites')
+          .insert([{ user_id: userId, listing_id: listingId }]);
+        
+        if (error) throw error;
+        
         setFavorites(prev => [...prev, listingId]);
         toast({
           title: "Added to favorites",
