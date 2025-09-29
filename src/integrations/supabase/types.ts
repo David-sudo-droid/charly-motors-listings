@@ -14,6 +14,85 @@ export type Database = {
   }
   public: {
     Tables: {
+      contact_inquiries: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          listing_id: string | null
+          message: string
+          name: string
+          phone: string | null
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          listing_id?: string | null
+          message: string
+          name: string
+          phone?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          listing_id?: string | null
+          message?: string
+          name?: string
+          phone?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_inquiries_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listing_analytics: {
+        Row: {
+          created_at: string | null
+          id: string
+          inquiry_count: number | null
+          last_viewed: string | null
+          listing_id: string | null
+          view_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          inquiry_count?: number | null
+          last_viewed?: string | null
+          listing_id?: string | null
+          view_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          inquiry_count?: number | null
+          last_viewed?: string | null
+          listing_id?: string | null
+          view_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_analytics_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: true
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       listings: {
         Row: {
           created_at: string
@@ -98,6 +177,59 @@ export type Database = {
         }
         Relationships: []
       }
+      user_favorites: {
+        Row: {
+          created_at: string | null
+          id: string
+          listing_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          listing_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          listing_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_favorites_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_search_history: {
+        Row: {
+          created_at: string | null
+          filters: Json | null
+          id: string
+          search_query: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          filters?: Json | null
+          id?: string
+          search_query: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          filters?: Json | null
+          id?: string
+          search_query?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -106,6 +238,18 @@ export type Database = {
       get_current_user_admin_status: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      get_total_users_count: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      increment_inquiry_count: {
+        Args: { listing_uuid: string }
+        Returns: undefined
+      }
+      increment_view_count: {
+        Args: { listing_uuid: string }
+        Returns: undefined
       }
       is_admin: {
         Args: { user_email: string }
