@@ -26,11 +26,16 @@ interface Listing {
 
 export const ListingsGrid = () => {
   const [listings, setListings] = useState<Listing[]>([]);
+  const [allListings, setAllListings] = useState<Listing[]>([]); // Cache all loaded listings
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const { toast } = useToast();
+  
+  const LISTINGS_PER_PAGE = 12;
 
   const [filters, setFilters] = useState<AdvancedFilters>({
     searchQuery: '',
@@ -56,9 +61,23 @@ export const ListingsGrid = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from('listings')
-      .select('*')
+      .select(`
+        id,
+        type,
+        title,
+        price,
+        currency,
+        location,
+        images,
+        description,
+        features,
+        specifications,
+        whatsapp_number,
+        featured
+      `)
       .order('featured', { ascending: false })
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(LISTINGS_PER_PAGE);
 
     if (error) {
       toast({
@@ -83,8 +102,64 @@ export const ListingsGrid = () => {
         featured: item.featured,
       }));
       setListings(transformedData);
+      setAllListings(transformedData); // Cache the initial listings
+      setHasMore(transformedData.length === LISTINGS_PER_PAGE);
     }
     setLoading(false);
+  };
+
+  const loadMoreListings = async () => {
+    if (loadingMore || !hasMore) return;
+
+    setLoadingMore(true);
+    const { data, error } = await supabase
+      .from('listings')
+      .select(`
+        id,
+        type,
+        title,
+        price,
+        currency,
+        location,
+        images,
+        description,
+        features,
+        specifications,
+        whatsapp_number,
+        featured
+      `)
+      .order('featured', { ascending: false })
+      .order('created_at', { ascending: false })
+      .range(listings.length, listings.length + LISTINGS_PER_PAGE - 1);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load more listings",
+        variant: "destructive",
+      });
+    } else {
+      const transformedData = (data || []).map((item: any) => ({
+        id: item.id,
+        type: item.type,
+        title: item.title,
+        price: item.price,
+        currency: item.currency,
+        location: item.location,
+        images: item.images,
+        description: item.description,
+        features: item.features,
+        specifications: item.specifications,
+        whatsappNumber: item.whatsapp_number,
+        featured: item.featured,
+      }));
+      
+      const newAllListings = [...allListings, ...transformedData];
+      setListings(newAllListings);
+      setAllListings(newAllListings); // Update cache
+      setHasMore(transformedData.length === LISTINGS_PER_PAGE);
+    }
+    setLoadingMore(false);
   };
 
   const handleViewDetails = (listing: Listing) => {
@@ -98,7 +173,7 @@ export const ListingsGrid = () => {
   };
 
   const filteredListings = useMemo(() => {
-    return listings.filter((listing) => {
+    return allListings.filter((listing) => {
       // Type filter
       const matchesType = filters.type === 'all' || listing.type === filters.type;
       
@@ -150,7 +225,7 @@ export const ListingsGrid = () => {
              matchesYear && matchesCondition && matchesTransmission && 
              matchesFuelType && matchesPropertyType && matchesBedrooms && matchesFeatures;
     });
-  }, [listings, filters]);
+  }, [allListings, filters]);
 
   const featuredListings = filteredListings.filter(listing => listing.featured);
   const regularListings = filteredListings.filter(listing => !listing.featured);
@@ -233,7 +308,7 @@ export const ListingsGrid = () => {
                     className="cursor-pointer"
                     onClick={() => setFilters({ ...filters, type: 'all' })}
                   >
-                    All ({listings.length})
+                    All ({allListings.length})
                   </Badge>
                   <Badge 
                     variant={filters.type === 'car' ? 'default' : 'outline'}
@@ -241,7 +316,7 @@ export const ListingsGrid = () => {
                     onClick={() => setFilters({ ...filters, type: 'car' })}
                   >
                     <Car className="h-3 w-3 mr-1" />
-                    Cars ({listings.filter(l => l.type === 'car').length})
+                    Cars ({allListings.filter(l => l.type === 'car').length})
                   </Badge>
                   <Badge 
                     variant={filters.type === 'property' ? 'default' : 'outline'}
@@ -249,7 +324,7 @@ export const ListingsGrid = () => {
                     onClick={() => setFilters({ ...filters, type: 'property' })}
                   >
                     <Home className="h-3 w-3 mr-1" />
-                    Properties ({listings.filter(l => l.type === 'property').length})
+                    Properties ({allListings.filter(l => l.type === 'property').length})
                   </Badge>
                 </div>
               </div>
@@ -287,7 +362,7 @@ export const ListingsGrid = () => {
         {/* Results Summary */}
         <div className="flex items-center justify-between mb-6">
           <p className="text-muted-foreground">
-            Showing {filteredListings.length} of {listings.length} listings
+            Showing {filteredListings.length} of {allListings.length} listings
           </p>
           {(filters.searchQuery || filters.location || filters.condition.length > 0 || 
             filters.transmission.length > 0 || filters.fuelType.length > 0 || 
@@ -343,6 +418,28 @@ export const ListingsGrid = () => {
                     />
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* Load More Button */}
+            {!loading && hasMore && (
+              <div className="text-center mt-12">
+                <Button 
+                  onClick={loadMoreListings}
+                  disabled={loadingMore}
+                  size="lg"
+                  variant="outline"
+                  className="px-8"
+                >
+                  {loadingMore ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      Loading more...
+                    </>
+                  ) : (
+                    `Load More Listings`
+                  )}
+                </Button>
               </div>
             )}
           </>

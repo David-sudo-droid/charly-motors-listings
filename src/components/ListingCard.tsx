@@ -159,6 +159,8 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
               src={listing.images[0]}
               alt={listing.title}
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              loading="lazy"
+              decoding="async"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
