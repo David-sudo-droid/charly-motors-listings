@@ -1,12 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Car, Home, MessageCircle, Star, Eye, Heart, Share2, Scale } from "lucide-react";
+import { MapPin, Car, Home, MessageCircle, Star, Eye, Share2, Scale } from "lucide-react";
 import { Listing } from "@/data/listings";
 import { useState } from "react";
-import { useFavorites } from "@/hooks/useFavorites";
-import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
 import { useComparison } from "@/hooks/useComparison";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
@@ -17,8 +14,6 @@ interface ListingCardProps {
 
 const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
-  const { user } = useAuth();
-  const { toggleFavorite, isFavorite } = useFavorites(user?.id);
   const { addToComparison, isInComparison } = useComparison();
 
   const formatPrice = (price: number, currency: string) => {
@@ -29,24 +24,12 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
     }).format(price).replace('KES', 'KSH');
   };
 
-  const handleWhatsAppClick = async (e: React.MouseEvent) => {
+  const handleWhatsAppClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    
-    // Track inquiry analytics
-    try {
-      await supabase.rpc('increment_inquiry_count', { listing_uuid: listing.id });
-    } catch (error) {
-      console.error('Error tracking inquiry:', error);
-    }
     
     const message = `Hi! I'm interested in the ${listing.title} listed for ${formatPrice(listing.price, listing.currency)}. Could you provide more information?`;
     const whatsappUrl = `https://wa.me/${listing.whatsappNumber.replace('+', '')}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
-  };
-
-  const handleFavoriteClick = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    await toggleFavorite(listing.id);
   };
 
   const handleShareClick = async (e: React.MouseEvent) => {
@@ -73,24 +56,17 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
     }
   };
 
-  const handleViewDetails = async (e?: React.MouseEvent) => {
+  const handleViewDetails = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    
-    // Track view analytics
-    try {
-      await supabase.rpc('increment_view_count', { listing_uuid: listing.id });
-    } catch (error) {
-      console.error('Error tracking view:', error);
-    }
-    
     onViewDetails(listing);
   };
 
-  const handleCompareClick = async (e: React.MouseEvent) => {
+  const handleCompareClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    console.log('Adding to comparison:', listing.title);
-    const success = addToComparison(listing);
-    console.log('Add to comparison result:', success);
+    addToComparison({
+      ...listing,
+      specifications: listing.specifications || {}
+    });
   };
 
   return (
@@ -124,14 +100,6 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
 
       {/* Action buttons */}
       <div className="absolute top-4 right-4 z-20 flex flex-col gap-2">
-        <button
-          onClick={handleFavoriteClick}
-          className="w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 hover:bg-white border border-border/20"
-        >
-          <Heart 
-            className={`w-4 h-4 transition-colors ${isFavorite(listing.id) ? 'fill-red-500 text-red-500' : 'text-muted-foreground hover:text-red-500'}`} 
-          />
-        </button>
         <button
           onClick={handleCompareClick}
           className={`w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 hover:bg-white border border-border/20 ${isInComparison(listing.id) ? 'bg-primary/10 border-primary/20' : ''}`}
