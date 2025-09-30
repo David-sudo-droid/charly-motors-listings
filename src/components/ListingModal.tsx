@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { MapPin, MessageCircle, X, Car, Home } from "lucide-react";
 import { Listing } from "@/data/listings";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 interface ListingModalProps {
   listing: Listing | null;
@@ -56,31 +57,52 @@ const ListingModal = ({ listing, isOpen, onClose }: ListingModalProps) => {
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Image Display */}
-          <div className="relative h-64 md:h-96 bg-muted rounded-lg overflow-hidden">
+          {/* Image Carousel */}
+          <div className="relative">
             {listing.images && listing.images.length > 0 ? (
-              <img
-                src={listing.images[0]}
-                alt={listing.title}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  // Show fallback if image fails to load
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  const fallback = target.parentElement?.querySelector('.fallback-icon') as HTMLElement;
-                  if (fallback) fallback.style.display = 'flex';
-                }}
-              />
-            ) : null}
-            
-            {/* Fallback icon (hidden by default) */}
-            <div className="fallback-icon absolute inset-0 flex items-center justify-center bg-muted" style={{ display: listing.images && listing.images.length > 0 ? 'none' : 'flex' }}>
-              {listing.type === 'car' ? (
-                <Car className="h-20 w-20 text-muted-foreground" />
-              ) : (
-                <Home className="h-20 w-20 text-muted-foreground" />
-              )}
-            </div>
+              <Carousel className="w-full">
+                <CarouselContent>
+                  {listing.images.map((image, index) => (
+                    <CarouselItem key={index}>
+                      <div className="relative h-64 md:h-96 bg-muted rounded-lg overflow-hidden">
+                        <img
+                          src={image}
+                          alt={`${listing.title} - Image ${index + 1}`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            const fallback = target.parentElement?.querySelector('.fallback-icon') as HTMLElement;
+                            if (fallback) fallback.style.display = 'flex';
+                          }}
+                        />
+                        <div className="fallback-icon absolute inset-0 hidden items-center justify-center bg-muted">
+                          {listing.type === 'car' ? (
+                            <Car className="h-20 w-20 text-muted-foreground" />
+                          ) : (
+                            <Home className="h-20 w-20 text-muted-foreground" />
+                          )}
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                {listing.images.length > 1 && (
+                  <>
+                    <CarouselPrevious className="left-4" />
+                    <CarouselNext className="right-4" />
+                  </>
+                )}
+              </Carousel>
+            ) : (
+              <div className="relative h-64 md:h-96 bg-muted rounded-lg overflow-hidden flex items-center justify-center">
+                {listing.type === 'car' ? (
+                  <Car className="h-20 w-20 text-muted-foreground" />
+                ) : (
+                  <Home className="h-20 w-20 text-muted-foreground" />
+                )}
+              </div>
+            )}
           </div>
 
           {/* Description */}

@@ -8,6 +8,7 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useComparison } from "@/hooks/useComparison";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 interface ListingCardProps {
   listing: Listing;
@@ -145,43 +146,48 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
         </button>
       </div>
       
-      {/* Enhanced image section */}
-      <div 
-        className="relative h-56 bg-slate-100 overflow-hidden transition-transform duration-300"
-        onClick={handleViewDetails}
-      >
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300" />
+      {/* Enhanced image section with carousel */}
+      <div className="relative h-56 bg-slate-100 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 pointer-events-none" />
         
-        {/* Image placeholder with better styling */}
         {listing.images && listing.images.length > 0 ? (
-          <div className="relative w-full h-full">
-            <img
-              src={listing.images[0]}
-              alt={listing.title}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-              loading="lazy"
-              decoding="async"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-                target.nextElementSibling!.classList.remove('hidden');
-              }}
-            />
-            <div className="hidden w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-              {listing.type === 'car' ? (
-                <Car className="h-16 w-16 text-primary/70" />
-              ) : (
-                <Home className="h-16 w-16 text-primary/70" />
-              )}
-            </div>
+          <Carousel className="w-full h-full">
+            <CarouselContent className="h-56">
+              {listing.images.map((image, index) => (
+                <CarouselItem key={index} className="h-56">
+                  <div className="relative w-full h-full" onClick={handleViewDetails}>
+                    <img
+                      src={image}
+                      alt={`${listing.title} - Image ${index + 1}`}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 cursor-pointer"
+                      loading="lazy"
+                      decoding="async"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        target.nextElementSibling!.classList.remove('hidden');
+                      }}
+                    />
+                    <div className="hidden w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                      {listing.type === 'car' ? (
+                        <Car className="h-16 w-16 text-primary/70" />
+                      ) : (
+                        <Home className="h-16 w-16 text-primary/70" />
+                      )}
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
             {listing.images.length > 1 && (
-              <div className="absolute bottom-3 right-3 bg-black/70 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
-                +{listing.images.length - 1} more
-              </div>
+              <>
+                <CarouselPrevious className="left-2 h-8 w-8 bg-white/90 hover:bg-white" onClick={(e) => e.stopPropagation()} />
+                <CarouselNext className="right-2 h-8 w-8 bg-white/90 hover:bg-white" onClick={(e) => e.stopPropagation()} />
+              </>
             )}
-          </div>
+          </Carousel>
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
+          <div className="w-full h-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center" onClick={handleViewDetails}>
             {listing.type === 'car' ? (
               <Car className="h-16 w-16 text-primary/70" />
             ) : (
@@ -191,11 +197,11 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
         )}
 
         {/* Hover overlay with view button */}
-        <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 z-20 pointer-events-none ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
           <Button 
             variant="secondary" 
             size="sm" 
-            className="bg-white/90 backdrop-blur-sm text-primary hover:bg-white"
+            className="bg-white/90 backdrop-blur-sm text-primary hover:bg-white pointer-events-auto"
             onClick={handleViewDetails}
           >
             <Eye className="w-4 h-4 mr-2" />
