@@ -15,6 +15,7 @@ interface ListingCardProps {
 
 const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const { addToComparison, isInComparison } = useComparison();
 
   const formatPrice = (price: number, currency: string) => {
@@ -72,46 +73,46 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
 
   return (
     <Card 
-      className="listing-card cursor-pointer group relative overflow-hidden bg-white border-border shadow-md hover:shadow-xl transition-all duration-300"
+      className="listing-card cursor-pointer group relative overflow-hidden bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm border border-white/20 shadow-lg hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 transform hover:scale-[1.02] hover:-translate-y-2 animate-scale-in"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Clean badges */}
+      {/* Modern gradient badges */}
       <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
         {listing.featured && (
-          <Badge className="bg-primary text-primary-foreground font-semibold">
-            <Star className="w-3 h-3 mr-1" />
+          <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-semibold shadow-lg animate-bounce-subtle">
+            <Star className="w-3 h-3 mr-1 fill-current" />
             Featured
           </Badge>
         )}
-        <Badge variant="secondary" className="bg-white/90 backdrop-blur-sm">
+        <Badge className="bg-white/95 backdrop-blur-md border border-white/30 text-gray-700 shadow-lg">
           {listing.type === 'car' ? (
             <>
-              <Car className="w-3 h-3 mr-1" />
+              <Car className="w-3 h-3 mr-1 text-blue-600" />
               Vehicle
             </>
           ) : (
             <>
-              <Home className="w-3 h-3 mr-1" />
+              <Home className="w-3 h-3 mr-1 text-green-600" />
               Property
             </>
           )}
         </Badge>
       </div>
 
-      {/* Action buttons */}
-      <div className="absolute top-4 right-4 z-20 flex flex-col gap-2">
+      {/* Modern action buttons */}
+      <div className="absolute top-4 right-4 z-20 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
         <button
           onClick={handleCompareClick}
-          className={`w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 hover:bg-white border border-border/20 ${isInComparison(listing.id) ? 'bg-primary/10 border-primary/20' : ''}`}
+          className={`w-10 h-10 bg-white/95 backdrop-blur-md rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-xl border border-white/30 ${isInComparison(listing.id) ? 'bg-gradient-to-r from-primary/20 to-accent/20 border-primary/30 shadow-primary/20' : 'hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10'}`}
         >
-          <Scale className={`w-4 h-4 transition-colors ${isInComparison(listing.id) ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`} />
+          <Scale className={`w-4 h-4 transition-all duration-300 ${isInComparison(listing.id) ? 'text-primary scale-110' : 'text-gray-600 hover:text-primary'}`} />
         </button>
         <button
           onClick={handleShareClick}
-          className="w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 hover:bg-white border border-border/20"
+          className="w-10 h-10 bg-white/95 backdrop-blur-md rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-xl border border-white/30 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50"
         >
-          <Share2 className="w-4 h-4 text-muted-foreground hover:text-primary" />
+          <Share2 className="w-4 h-4 text-gray-600 hover:text-blue-600 transition-colors duration-300" />
         </button>
       </div>
       
@@ -215,18 +216,18 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
         )}
       </CardContent>
 
-      {/* Enhanced footer */}
-      <CardFooter className="px-6 pb-6 pt-0 flex gap-3">
+      {/* Modern glass morphism footer */}
+      <CardFooter className="px-6 pb-6 pt-0 flex gap-3 bg-gradient-to-r from-white/40 to-white/20 backdrop-blur-sm">
         <Button 
           variant="outline" 
-          className="flex-1 hover:bg-primary/10 hover:border-primary/20 hover:text-primary transition-all duration-300"
+          className="flex-1 bg-white/80 backdrop-blur-sm border-white/30 hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 hover:border-primary/30 hover:text-primary transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105"
           onClick={handleViewDetails}
         >
           <Eye className="h-4 w-4 mr-2" />
           View Details
         </Button>
         <Button 
-          className="flex-1 bg-green-600 hover:bg-green-700 text-white transition-all duration-300 shadow-lg hover:shadow-green-600/25"
+          className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white transition-all duration-300 shadow-lg hover:shadow-green-500/30 hover:scale-105 border-0"
           onClick={handleWhatsAppClick}
         >
           <MessageCircle className="h-4 w-4 mr-2" />
