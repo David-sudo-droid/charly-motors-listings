@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Car, Home, MessageCircle, Star, Eye, Share2, Scale } from "lucide-react";
+import { MapPin, Car, Home, MessageCircle, Star, Eye, Share2, Scale, Phone, Gauge, Calendar, Fuel, Heart } from "lucide-react";
 import { Listing } from "@/data/listings";
 import { useState } from "react";
 import { useComparison } from "@/hooks/useComparison";
@@ -71,167 +71,154 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
     });
   };
 
+  // Add car-specific helper functions
+  const getCarBadges = () => {
+    const badges = [];
+    const specs = listing.specifications || {};
+    
+    if (listing.featured) badges.push({ text: 'Featured', color: 'bg-orange-500', icon: '⭐' });
+    if (specs.mileage && parseInt(specs.mileage.replace(/[^0-9]/g, '')) < 50000) {
+      badges.push({ text: 'Low Miles', color: 'bg-green-500' });
+    }
+    if (listing.price < 2000000) badges.push({ text: 'Great Deal', color: 'bg-blue-500' });
+    
+    return badges;
+  };
+
+  const getKeySpecs = () => {
+    const specs = listing.specifications || {};
+    return [
+      { icon: Calendar, label: specs.Year || specs.year || 'N/A', title: 'Year' },
+      { icon: Gauge, label: specs.Mileage || specs.mileage || 'N/A', title: 'Mileage' },
+      { icon: Fuel, label: specs['Fuel Type'] || specs.fuelType || 'N/A', title: 'Fuel' },
+      { icon: Car, label: specs.Transmission || specs.transmission || 'N/A', title: 'Trans.' }
+    ];
+  };
+
   return (
     <Card 
-      className="listing-card cursor-pointer group relative overflow-hidden bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm border border-white/20 shadow-lg hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 transform hover:scale-[1.02] hover:-translate-y-2 animate-scale-in"
+      className="listing-card group relative overflow-hidden bg-white border border-gray-200 hover:border-blue-300 shadow-sm hover:shadow-lg transition-all duration-300 rounded-lg"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Modern gradient badges */}
-      <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
-        {listing.featured && (
-          <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-semibold shadow-lg animate-bounce-subtle">
-            <Star className="w-3 h-3 mr-1 fill-current" />
-            Featured
+      {/* Car site style badges */}
+      <div className="absolute top-3 left-3 z-20 flex flex-wrap gap-1">
+        {getCarBadges().map((badge, index) => (
+          <Badge key={index} className={`${badge.color} text-white text-xs font-medium px-2 py-1`}>
+            {badge.icon && <span className="mr-1">{badge.icon}</span>}
+            {badge.text}
           </Badge>
-        )}
-        <Badge className="bg-white/95 backdrop-blur-md border border-white/30 text-gray-700 shadow-lg">
-          {listing.type === 'car' ? (
-            <>
-              <Car className="w-3 h-3 mr-1 text-blue-600" />
-              Vehicle
-            </>
-          ) : (
-            <>
-              <Home className="w-3 h-3 mr-1 text-green-600" />
-              Property
-            </>
-          )}
-        </Badge>
+        ))}
       </div>
 
-      {/* Modern action buttons */}
-      <div className="absolute top-4 right-4 z-20 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+      {/* Car site style action buttons */}
+      <div className="absolute top-3 right-3 z-20 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
         <button
           onClick={handleCompareClick}
-          className={`w-10 h-10 bg-white/95 backdrop-blur-md rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-xl border border-white/30 ${isInComparison(listing.id) ? 'bg-gradient-to-r from-primary/20 to-accent/20 border-primary/30 shadow-primary/20' : 'hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10'}`}
+          className={`w-8 h-8 bg-white border border-gray-300 rounded-md flex items-center justify-center transition-colors duration-200 hover:bg-blue-50 ${isInComparison(listing.id) ? 'bg-blue-50 border-blue-300 text-blue-600' : 'text-gray-600'}`}
+          title="Compare"
         >
-          <Scale className={`w-4 h-4 transition-all duration-300 ${isInComparison(listing.id) ? 'text-primary scale-110' : 'text-gray-600 hover:text-primary'}`} />
+          <Scale className="w-4 h-4" />
         </button>
         <button
           onClick={handleShareClick}
-          className="w-10 h-10 bg-white/95 backdrop-blur-md rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-xl border border-white/30 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50"
+          className="w-8 h-8 bg-white border border-gray-300 rounded-md flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors duration-200"
+          title="Save"
         >
-          <Share2 className="w-4 h-4 text-gray-600 hover:text-blue-600 transition-colors duration-300" />
+          <Heart className="w-4 h-4" />
         </button>
       </div>
       
-      {/* Enhanced image section with carousel */}
-      <div className="relative h-56 bg-slate-100 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 pointer-events-none" />
+      {/* Professional image section like car sites */}
+      <div className="relative h-48 bg-gray-100 overflow-hidden cursor-pointer" onClick={handleViewDetails}>
         
         {listing.images && listing.images.length > 0 ? (
-          <Carousel className="w-full h-full">
-            <CarouselContent className="h-56">
-              {listing.images.map((image, index) => (
-                <CarouselItem key={index} className="h-56">
-                  <div className="relative w-full h-full cursor-pointer" onClick={handleViewDetails}>
-                    <OptimizedImage
-                      src={image}
-                      alt={`${listing.title} - Image ${index + 1}`}
-                      className="transition-transform duration-700 group-hover:scale-110"
-                      width={400}
-                      height={224}
-                      listingType={listing.type}
-                      priority={listing.featured && index === 0} // Prioritize first image of featured listings
-                      quality={85}
-                    />
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            {listing.images.length > 1 && (
-              <>
-                <CarouselPrevious className="left-2 h-8 w-8 bg-white/90 hover:bg-white" onClick={(e) => e.stopPropagation()} />
-                <CarouselNext className="right-2 h-8 w-8 bg-white/90 hover:bg-white" onClick={(e) => e.stopPropagation()} />
-              </>
-            )}
-          </Carousel>
+          <OptimizedImage
+            src={listing.images[0]}
+            alt={`${listing.title}`}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            width={400}
+            height={192}
+            listingType={listing.type}
+            priority={listing.featured}
+            quality={85}
+          />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center" onClick={handleViewDetails}>
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
             {listing.type === 'car' ? (
-              <Car className="h-16 w-16 text-primary/70" />
+              <Car className="h-16 w-16 text-gray-400" />
             ) : (
-              <Home className="h-16 w-16 text-primary/70" />
+              <Home className="h-16 w-16 text-gray-400" />
             )}
           </div>
         )}
-
-        {/* Hover overlay with view button */}
-        <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 z-20 pointer-events-none ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
-          <Button 
-            variant="secondary" 
-            size="sm" 
-            className="bg-white/90 backdrop-blur-sm text-primary hover:bg-white pointer-events-auto"
-            onClick={handleViewDetails}
-          >
-            <Eye className="w-4 h-4 mr-2" />
-            Quick View
-          </Button>
-        </div>
+        
+        {/* Image count indicator */}
+        {listing.images && listing.images.length > 1 && (
+          <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+            1 of {listing.images.length}
+          </div>
+        )}
       </div>
 
-      {/* Enhanced content section */}
-      <CardContent className="p-6" onClick={handleViewDetails}>
-        <div className="mb-4">
-          <h3 className="font-bold text-xl leading-tight group-hover:text-primary transition-colors duration-300 mb-2">
-            {listing.title}
-          </h3>
-          
-          <div className="flex items-center justify-between mb-3">
-            <div className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              {formatPrice(listing.price, listing.currency)}
-            </div>
-            <div className="flex items-center text-sm text-muted-foreground">
-              <MapPin className="h-4 w-4 mr-1" />
-              {listing.location}
-            </div>
+      {/* Professional content section like AutoTrader */}
+      <CardContent className="p-4" onClick={handleViewDetails}>
+        {/* Price prominently displayed */}
+        <div className="mb-3">
+          <div className="text-2xl font-bold text-gray-900">
+            {formatPrice(listing.price, listing.currency)}
           </div>
         </div>
 
-        {/* Features with better styling */}
-        {listing.features.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mb-4">
-            {listing.features.slice(0, 3).map((feature, index) => (
-              <Badge 
-                key={index} 
-                variant="outline" 
-                className="text-xs bg-primary/5 border-primary/20 hover:bg-primary/10 transition-colors"
-              >
-                {feature}
-              </Badge>
-            ))}
-            {listing.features.length > 3 && (
-              <Badge variant="outline" className="text-xs bg-muted/50">
-                +{listing.features.length - 3} more
-              </Badge>
-            )}
-          </div>
-        )}
+        {/* Title */}
+        <h3 className="font-semibold text-lg text-gray-900 mb-3 group-hover:text-blue-600 transition-colors leading-tight">
+          {listing.title}
+        </h3>
 
-        {listing.description && (
-          <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-            {listing.description}
-          </p>
-        )}
+        {/* Key specifications grid */}
+        <div className="grid grid-cols-2 gap-2 mb-3">
+          {getKeySpecs().slice(0, 4).map((spec, index) => {
+            const IconComponent = spec.icon;
+            return (
+              <div key={index} className="flex items-center text-sm text-gray-600">
+                <IconComponent className="h-4 w-4 mr-1 text-gray-400" />
+                <span className="truncate" title={`${spec.title}: ${spec.label}`}>
+                  {spec.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Location */}
+        <div className="flex items-center text-sm text-gray-600 mb-3">
+          <MapPin className="h-4 w-4 mr-1 text-gray-400" />
+          {listing.location}
+        </div>
+
+        {/* Dealer info */}
+        <div className="text-xs text-gray-500 border-t pt-2">
+          Charly Motors • Verified Dealer
+        </div>
       </CardContent>
 
-      {/* Modern glass morphism footer */}
-      <CardFooter className="px-6 pb-6 pt-0 flex gap-3 bg-gradient-to-r from-white/40 to-white/20 backdrop-blur-sm">
+      {/* Professional footer like car sites */}
+      <CardFooter className="p-4 pt-0 flex gap-2 border-t">
         <Button 
-          variant="outline" 
-          className="flex-1 bg-white/80 backdrop-blur-sm border-white/30 hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 hover:border-primary/30 hover:text-primary transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105"
+          variant="outline"
+          size="sm"
+          className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
           onClick={handleViewDetails}
         >
-          <Eye className="h-4 w-4 mr-2" />
           View Details
         </Button>
         <Button 
-          className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white transition-all duration-300 shadow-lg hover:shadow-green-500/30 hover:scale-105 border-0"
+          size="sm"
+          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white transition-colors"
           onClick={handleWhatsAppClick}
         >
-          <MessageCircle className="h-4 w-4 mr-2" />
-          WhatsApp
+          <Phone className="h-4 w-4 mr-1" />
+          Contact
         </Button>
       </CardFooter>
     </Card>

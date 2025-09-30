@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Search, Car, Home, MapPin, Star, Shield, Clock, Award } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import CarSearchForm from "@/components/CarSearchForm";
 
 const Hero = () => {
   const scrollToSection = (sectionId: string) => {
@@ -116,6 +117,11 @@ const Hero = () => {
             </Card>
           </div>
         </div>
+      </div>
+      
+      {/* Professional Search Form like Cars.com */}
+      <div className="relative z-20 container mx-auto px-4">
+        <CarSearchForm />
       </div>
 
       {/* Scroll indicator */}

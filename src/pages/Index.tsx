@@ -5,6 +5,7 @@ import ListingsGrid from "@/components/ListingsGrid";
 import ComparisonBar from "@/components/ComparisonBar";
 import ComparisonModal from "@/components/ComparisonModal";
 import ComparisonDebug from "@/components/ComparisonDebug";
+import FinancingCalculator from "@/components/FinancingCalculator";
 import { useComparison } from "@/hooks/useComparison";
 
 const Index = () => {
@@ -24,8 +25,22 @@ const Index = () => {
       {/* Cars Section */}
       <section id="cars" className="py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Our Vehicle Collection</h2>
           <ListingsGrid />
+        </div>
+      </section>
+      
+      {/* Financing Section */}
+      <section id="financing" className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Car Financing Made Easy
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Calculate your monthly payments and get pre-approved for financing with competitive rates from trusted lenders.
+            </p>
+          </div>
+          <FinancingCalculator />
         </div>
       </section>
 

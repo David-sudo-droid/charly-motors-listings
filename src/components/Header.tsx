@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Car, Home, Menu, X, LogIn, LogOut, User, Settings, Heart } from "lucide-react";
+import { Car, Home, Menu, X, LogIn, LogOut, User, Settings, Heart, Search, MapPin, Calculator, Award } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
@@ -31,71 +31,99 @@ export const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
-        {/* Logo */}
-        <Link to="/" className="flex items-center space-x-2">
-          <div className="flex items-center space-x-1">
-            <Car className="h-6 w-6 text-primary" />
-            <Home className="h-6 w-6 text-accent" />
+    <>
+    {/* Top utility bar like Cars.com */}
+    <div className="bg-gray-800 text-white text-xs py-1">
+      <div className="container mx-auto px-4 flex justify-between items-center">
+        <div className="flex items-center space-x-4">
+          <span className="flex items-center">
+            <MapPin className="h-3 w-3 mr-1" />
+            Serving All Kenya
+          </span>
+          <span>📞 +254 712 345 678</span>
+        </div>
+        <div className="flex items-center space-x-4">
+          <span className="flex items-center">
+            <Award className="h-3 w-3 mr-1" />
+            Trusted Dealer Network
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
+      <div className="container flex h-20 items-center justify-between">
+        {/* Enhanced Logo like AutoTrader */}
+        <Link to="/" className="flex items-center space-x-3">
+          <div className="flex items-center space-x-1 bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-lg">
+            <Car className="h-7 w-7 text-white" />
+            <Home className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-primary">Charly Motors</h1>
-            <p className="text-xs text-muted-foreground -mt-1">& Properties</p>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">CharlyMotors</h1>
+            <p className="text-sm text-gray-600 -mt-1 font-medium">Cars & Properties</p>
           </div>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6">
-          <a href="#hero" className="text-sm font-medium transition-smooth hover:text-primary">
-            Home
+        {/* Professional Navigation like Cars.com */}
+        <nav className="hidden lg:flex items-center space-x-8">
+          <a href="#cars" className="text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors flex items-center gap-1">
+            <Car className="h-4 w-4" />
+            Buy Cars
           </a>
-          <a href="#cars" className="text-sm font-medium transition-smooth hover:text-primary">
-            Cars
+          <a href="#properties" className="text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors flex items-center gap-1">
+            <Home className="h-4 w-4" />
+            Real Estate
           </a>
-          <a href="#properties" className="text-sm font-medium transition-smooth hover:text-primary">
-            Properties
+          <a href="#financing" className="text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors flex items-center gap-1">
+            <Calculator className="h-4 w-4" />
+            Finance
           </a>
-          <a href="#about" className="text-sm font-medium transition-smooth hover:text-primary">
-            About
+          <a href="#research" className="text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors flex items-center gap-1">
+            <Search className="h-4 w-4" />
+            Research
           </a>
-          <a href="#contact" className="text-sm font-medium transition-smooth hover:text-primary">
-            Contact
+          <a href="#about" className="text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors">
+            About Us
           </a>
           {isAdmin && (
-            <Link to="/admin" className="text-sm font-medium transition-smooth hover:text-primary flex items-center gap-1">
+            <Link to="/admin" className="text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors flex items-center gap-1">
               <Settings className="h-4 w-4" />
-              Admin Panel
+              Admin
             </Link>
           )}
         </nav>
 
-        {/* Auth & CTA Buttons */}
-        <div className="hidden md:flex items-center space-x-4">
+        {/* Professional CTA Section like AutoTrader */}
+        <div className="hidden md:flex items-center space-x-3">
           {user ? (
             <>
               <Link to="/favorites">
-                <Button variant="ghost" size="sm">
-                  <Heart className="h-4 w-4 mr-2" />
-                  Favorites
+                <Button variant="ghost" size="sm" className="text-gray-700 hover:text-blue-600">
+                  <Heart className="h-4 w-4 mr-1" />
+                  Saved Cars
                 </Button>
               </Link>
-              <span className="text-sm text-muted-foreground">
-                Welcome, {user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'}
-                {isAdmin && <span className="ml-1 text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded">Admin</span>}
-              </span>
-              <Button variant="outline" size="sm" onClick={handleSignOut}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
+              <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:border-blue-600 hover:text-blue-600">
+                <User className="h-4 w-4 mr-1" />
+                My Account
+              </Button>
+              <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white">
+                List Your Car
               </Button>
             </>
           ) : (
-            <Link to="/auth">
-              <Button size="sm">
-                <LogIn className="h-4 w-4 mr-2" />
-                Sign In
+            <>
+              <Link to="/auth">
+                <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:border-blue-600 hover:text-blue-600">
+                  <LogIn className="h-4 w-4 mr-1" />
+                  Sign In
+                </Button>
+              </Link>
+              <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white font-semibold">
+                List Your Car
               </Button>
-            </Link>
+            </>
           )}
         </div>
 
@@ -156,6 +184,7 @@ export const Header = () => {
         </div>
       )}
     </header>
+    </>
   );
 };
 
