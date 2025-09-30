@@ -6,6 +6,7 @@ import { Listing } from "@/data/listings";
 import { useState } from "react";
 import { useComparison } from "@/hooks/useComparison";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import OptimizedImage from "@/components/OptimizedImage";
 
 interface ListingCardProps {
   listing: Listing;
@@ -123,26 +124,17 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
             <CarouselContent className="h-56">
               {listing.images.map((image, index) => (
                 <CarouselItem key={index} className="h-56">
-                  <div className="relative w-full h-full" onClick={handleViewDetails}>
-                    <img
+                  <div className="relative w-full h-full cursor-pointer" onClick={handleViewDetails}>
+                    <OptimizedImage
                       src={image}
                       alt={`${listing.title} - Image ${index + 1}`}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 cursor-pointer"
-                      loading="lazy"
-                      decoding="async"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                        target.nextElementSibling!.classList.remove('hidden');
-                      }}
+                      className="transition-transform duration-700 group-hover:scale-110"
+                      width={400}
+                      height={224}
+                      listingType={listing.type}
+                      priority={listing.featured && index === 0} // Prioritize first image of featured listings
+                      quality={85}
                     />
-                    <div className="hidden w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                      {listing.type === 'car' ? (
-                        <Car className="h-16 w-16 text-primary/70" />
-                      ) : (
-                        <Home className="h-16 w-16 text-primary/70" />
-                      )}
-                    </div>
                   </div>
                 </CarouselItem>
               ))}

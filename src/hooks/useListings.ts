@@ -40,9 +40,24 @@ export const useListings = () => {
       const from = pageParam * LISTINGS_PER_PAGE;
       const to = from + LISTINGS_PER_PAGE - 1;
 
+      // Select only necessary fields for better performance
       const { data, error } = await supabase
         .from('listings')
-        .select('*')
+        .select(`
+          id,
+          type,
+          title,
+          price,
+          currency,
+          location,
+          images,
+          description,
+          features,
+          specifications,
+          whatsapp_number,
+          featured,
+          created_at
+        `)
         .order('featured', { ascending: false })
         .order('created_at', { ascending: false })
         .range(from, to);
@@ -55,8 +70,11 @@ export const useListings = () => {
       };
     },
     getNextPageParam: (lastPage) => lastPage.nextPage,
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    gcTime: 10 * 60 * 1000, // Keep in memory for 10 minutes
+    staleTime: 10 * 60 * 1000, // Cache for 10 minutes (increased)
+    gcTime: 20 * 60 * 1000, // Keep in memory for 20 minutes (increased)
     initialPageParam: 0,
+    // Enable background refetching for better UX
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: true,
   });
 };

@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { MapPin, MessageCircle, X, Car, Home } from "lucide-react";
 import { Listing } from "@/data/listings";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import OptimizedImage from "@/components/OptimizedImage";
 
 interface ListingModalProps {
   listing: Listing | null;
@@ -64,25 +65,17 @@ const ListingModal = ({ listing, isOpen, onClose }: ListingModalProps) => {
                 <CarouselContent>
                   {listing.images.map((image, index) => (
                     <CarouselItem key={index}>
-                      <div className="relative h-64 md:h-96 bg-muted rounded-lg overflow-hidden">
-                        <img
+                      <div className="relative h-64 md:h-96 rounded-lg overflow-hidden">
+                        <OptimizedImage
                           src={image}
                           alt={`${listing.title} - Image ${index + 1}`}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                            const fallback = target.parentElement?.querySelector('.fallback-icon') as HTMLElement;
-                            if (fallback) fallback.style.display = 'flex';
-                          }}
+                          className="rounded-lg"
+                          width={800}
+                          height={384}
+                          listingType={listing.type}
+                          priority={index === 0} // Prioritize first image
+                          quality={90} // Higher quality for modal
                         />
-                        <div className="fallback-icon absolute inset-0 hidden items-center justify-center bg-muted">
-                          {listing.type === 'car' ? (
-                            <Car className="h-20 w-20 text-muted-foreground" />
-                          ) : (
-                            <Home className="h-20 w-20 text-muted-foreground" />
-                          )}
-                        </div>
                       </div>
                     </CarouselItem>
                   ))}

@@ -1,15 +1,37 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import ListingCard from "./ListingCard";
 import ListingModal from "./ListingModal";
 import AdvancedSearchFilters, { AdvancedFilters } from "./AdvancedSearchFilters";
 import { useListings, type Listing } from "@/hooks/useListings";
+import { usePerformanceMonitoring, useQueryPerformanceMonitoring } from "@/hooks/usePerformanceMonitoring";
 import { Loader2, Search, Car, Home, Filter, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// Custom hook for debounced search
+const useDebounce = (value: string, delay: number) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
+
 export const ListingsGrid = () => {
   const { data, fetchNextPage, hasNextPage, isLoading, isFetchingNextPage } = useListings();
+  
+  // Performance monitoring
+  usePerformanceMonitoring('ListingsGrid');
+  useQueryPerformanceMonitoring(['listings'], data, isLoading);
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
@@ -30,6 +52,9 @@ export const ListingsGrid = () => {
     features: []
   });
 
+  // Debounce search query for better performance
+  const debouncedSearchQuery = useDebounce(filters.searchQuery, 300);
+  
   // Flatten all listings from pages
   const allListings = useMemo(() => {
     return data?.pages.flatMap(page => page.listings) || [];
@@ -45,60 +70,80 @@ export const ListingsGrid = () => {
     setSelectedListing(null);
   };
 
+  // Optimize filtering with better performance and debounced search
   const filteredListings = useMemo(() => {
+    if (!allListings.length) return [];
+    
     return allListings.filter((listing) => {
-      // Type filter
-      const matchesType = filters.type === 'all' || listing.type === filters.type;
+      // Type filter - early return for better performance
+      if (filters.type !== 'all' && listing.type !== filters.type) {
+        return false;
+      }
       
-      // Search query
-      const matchesSearch = !filters.searchQuery || 
-        listing.title.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
-        listing.location.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
-        listing.description?.toLowerCase().includes(filters.searchQuery.toLowerCase());
+      // Search query (debounced)
+      if (debouncedSearchQuery) {
+        const query = debouncedSearchQuery.toLowerCase();
+        const matchesSearch = 
+          listing.title.toLowerCase().includes(query) ||
+          listing.location.toLowerCase().includes(query) ||
+          listing.description?.toLowerCase().includes(query);
+        if (!matchesSearch) return false;
+      }
       
       // Location filter
-      const matchesLocation = !filters.location ||
-        listing.location.toLowerCase().includes(filters.location.toLowerCase());
+      if (filters.location && !listing.location.toLowerCase().includes(filters.location.toLowerCase())) {
+        return false;
+      }
       
       // Price filter
-      const matchesPrice = listing.price >= filters.priceMin && listing.price <= filters.priceMax;
+      if (listing.price < filters.priceMin || listing.price > filters.priceMax) {
+        return false;
+      }
       
-      // Year filter (for cars)
-      const matchesYear = !filters.yearMin && !filters.yearMax ? true :
-        (listing.specifications?.year ? 
-          (!filters.yearMin || listing.specifications.year >= filters.yearMin) &&
-          (!filters.yearMax || listing.specifications.year <= filters.yearMax)
-          : true);
+      // Year filter (for cars) - optimized
+      if (filters.yearMin || filters.yearMax) {
+        const year = listing.specifications?.year;
+        if (year) {
+          if (filters.yearMin && year < filters.yearMin) return false;
+          if (filters.yearMax && year > filters.yearMax) return false;
+        }
+      }
       
-      // Condition filter
-      const matchesCondition = filters.condition.length === 0 ||
-        (listing.specifications?.condition && filters.condition.includes(listing.specifications.condition));
+      // Array filters - optimized with early returns
+      if (filters.condition.length > 0 && 
+          (!listing.specifications?.condition || !filters.condition.includes(listing.specifications.condition))) {
+        return false;
+      }
       
-      // Transmission filter
-      const matchesTransmission = filters.transmission.length === 0 ||
-        (listing.specifications?.transmission && filters.transmission.includes(listing.specifications.transmission));
+      if (filters.transmission.length > 0 && 
+          (!listing.specifications?.transmission || !filters.transmission.includes(listing.specifications.transmission))) {
+        return false;
+      }
       
-      // Fuel type filter
-      const matchesFuelType = filters.fuelType.length === 0 ||
-        (listing.specifications?.fuelType && filters.fuelType.includes(listing.specifications.fuelType));
+      if (filters.fuelType.length > 0 && 
+          (!listing.specifications?.fuelType || !filters.fuelType.includes(listing.specifications.fuelType))) {
+        return false;
+      }
       
-      // Property type filter
-      const matchesPropertyType = filters.propertyType.length === 0 ||
-        (listing.specifications?.propertyType && filters.propertyType.includes(listing.specifications.propertyType));
+      if (filters.propertyType.length > 0 && 
+          (!listing.specifications?.propertyType || !filters.propertyType.includes(listing.specifications.propertyType))) {
+        return false;
+      }
       
       // Bedrooms filter
-      const matchesBedrooms = !filters.bedrooms ||
-        (listing.specifications?.bedrooms && listing.specifications.bedrooms.toString() === filters.bedrooms);
+      if (filters.bedrooms && 
+          (!listing.specifications?.bedrooms || listing.specifications.bedrooms.toString() !== filters.bedrooms)) {
+        return false;
+      }
       
-      // Features filter
-      const matchesFeatures = filters.features.length === 0 ||
-        filters.features.every(feature => listing.features.includes(feature));
+      // Features filter - optimized
+      if (filters.features.length > 0 && !filters.features.every(feature => listing.features.includes(feature))) {
+        return false;
+      }
       
-      return matchesType && matchesSearch && matchesLocation && matchesPrice && 
-             matchesYear && matchesCondition && matchesTransmission && 
-             matchesFuelType && matchesPropertyType && matchesBedrooms && matchesFeatures;
+      return true;
     });
-  }, [allListings, filters]);
+  }, [allListings, debouncedSearchQuery, filters]);
 
   const featuredListings = filteredListings.filter(listing => listing.featured);
   const regularListings = filteredListings.filter(listing => !listing.featured);
