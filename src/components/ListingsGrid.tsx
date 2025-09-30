@@ -1,41 +1,18 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import ListingCard from "./ListingCard";
 import ListingModal from "./ListingModal";
 import AdvancedSearchFilters, { AdvancedFilters } from "./AdvancedSearchFilters";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { useListings, type Listing } from "@/hooks/useListings";
 import { Loader2, Search, Car, Home, Filter, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 
-interface Listing {
-  id: string;
-  type: 'car' | 'property';
-  title: string;
-  price: number;
-  currency: string;
-  location: string;
-  images: string[];
-  description: string | null;
-  features: string[];
-  specifications: any;
-  whatsappNumber: string; // Changed to match existing components
-  featured: boolean;
-}
-
 export const ListingsGrid = () => {
-  const [listings, setListings] = useState<Listing[]>([]);
-  const [allListings, setAllListings] = useState<Listing[]>([]); // Cache all loaded listings
+  const { data, fetchNextPage, hasNextPage, isLoading, isFetchingNextPage } = useListings();
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
-  const { toast } = useToast();
-  
-  const LISTINGS_PER_PAGE = 12;
 
   const [filters, setFilters] = useState<AdvancedFilters>({
     searchQuery: '',
@@ -53,114 +30,10 @@ export const ListingsGrid = () => {
     features: []
   });
 
-  useEffect(() => {
-    fetchListings();
-  }, []);
-
-  const fetchListings = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from('listings')
-      .select(`
-        id,
-        type,
-        title,
-        price,
-        currency,
-        location,
-        images,
-        description,
-        features,
-        specifications,
-        whatsapp_number,
-        featured
-      `)
-      .order('featured', { ascending: false })
-      .order('created_at', { ascending: false })
-      .limit(LISTINGS_PER_PAGE);
-
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch listings",
-        variant: "destructive",
-      });
-    } else {
-      // Transform the data to match the expected format
-      const transformedData = (data || []).map((item: any) => ({
-        id: item.id,
-        type: item.type,
-        title: item.title,
-        price: item.price,
-        currency: item.currency,
-        location: item.location,
-        images: item.images,
-        description: item.description,
-        features: item.features,
-        specifications: item.specifications,
-        whatsappNumber: item.whatsapp_number, // Transform snake_case to camelCase
-        featured: item.featured,
-      }));
-      setListings(transformedData);
-      setAllListings(transformedData); // Cache the initial listings
-      setHasMore(transformedData.length === LISTINGS_PER_PAGE);
-    }
-    setLoading(false);
-  };
-
-  const loadMoreListings = async () => {
-    if (loadingMore || !hasMore) return;
-
-    setLoadingMore(true);
-    const { data, error } = await supabase
-      .from('listings')
-      .select(`
-        id,
-        type,
-        title,
-        price,
-        currency,
-        location,
-        images,
-        description,
-        features,
-        specifications,
-        whatsapp_number,
-        featured
-      `)
-      .order('featured', { ascending: false })
-      .order('created_at', { ascending: false })
-      .range(listings.length, listings.length + LISTINGS_PER_PAGE - 1);
-
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to load more listings",
-        variant: "destructive",
-      });
-    } else {
-      const transformedData = (data || []).map((item: any) => ({
-        id: item.id,
-        type: item.type,
-        title: item.title,
-        price: item.price,
-        currency: item.currency,
-        location: item.location,
-        images: item.images,
-        description: item.description,
-        features: item.features,
-        specifications: item.specifications,
-        whatsappNumber: item.whatsapp_number,
-        featured: item.featured,
-      }));
-      
-      const newAllListings = [...allListings, ...transformedData];
-      setListings(newAllListings);
-      setAllListings(newAllListings); // Update cache
-      setHasMore(transformedData.length === LISTINGS_PER_PAGE);
-    }
-    setLoadingMore(false);
-  };
+  // Flatten all listings from pages
+  const allListings = useMemo(() => {
+    return data?.pages.flatMap(page => page.listings) || [];
+  }, [data]);
 
   const handleViewDetails = (listing: Listing) => {
     setSelectedListing(listing);
@@ -270,7 +143,7 @@ export const ListingsGrid = () => {
     </section>
   );
 
-  if (loading) {
+  if (isLoading) {
     return <LoadingSkeleton />;
   }
 
@@ -422,16 +295,16 @@ export const ListingsGrid = () => {
             )}
 
             {/* Load More Button */}
-            {!loading && hasMore && (
+            {hasNextPage && (
               <div className="text-center mt-12">
                 <Button 
-                  onClick={loadMoreListings}
-                  disabled={loadingMore}
+                  onClick={() => fetchNextPage()}
+                  disabled={isFetchingNextPage}
                   size="lg"
                   variant="outline"
                   className="px-8"
                 >
-                  {loadingMore ? (
+                  {isFetchingNextPage ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       Loading more...
