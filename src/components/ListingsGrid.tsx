@@ -8,6 +8,7 @@ import { Loader2, Search, Car, Home, Filter, X, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import ListingsSkeleton from "./ListingsSkeleton";
+import CacheStatus from "./CacheStatus";
 
 // Custom hook for debounced search
 const useDebounce = (value: string, delay: number) => {
@@ -264,17 +265,22 @@ export const ListingsGrid = () => {
           )}
         </div>
 
-        {/* Results Summary - Mobile optimized */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3 sm:mb-4">
-          <p className="text-sm sm:text-base text-muted-foreground">
-            {filteredListings.length} of {allListings.length} listings
-          </p>
-          {(filters.searchQuery || filters.location) && (
-            <Button variant="ghost" size="sm" onClick={handleResetFilters} className="text-xs sm:text-sm">
-              <X className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-              Clear all filters
-            </Button>
-          )}
+        {/* Results Summary & Cache Status - Mobile optimized */}
+        <div className="flex flex-col gap-3 mb-3 sm:mb-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <p className="text-sm sm:text-base text-muted-foreground">
+              {filteredListings.length} of {allListings.length} listings
+            </p>
+            {(filters.searchQuery || filters.location) && (
+              <Button variant="ghost" size="sm" onClick={handleResetFilters} className="text-xs sm:text-sm">
+                <X className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                Clear all filters
+              </Button>
+            )}
+          </div>
+          
+          {/* Cache Status - Only show in development or when cache exists */}
+          <CacheStatus className="max-w-xs" showDetails={process.env.NODE_ENV === 'development'} />
         </div>
 
         {filteredListings.length === 0 ? (
