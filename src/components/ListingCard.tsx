@@ -101,36 +101,36 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Car site style badges */}
-      <div className="absolute top-3 left-3 z-20 flex flex-wrap gap-1">
+      {/* Car site style badges - Mobile optimized */}
+      <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-20 flex flex-wrap gap-1">
         {getCarBadges().map((badge, index) => (
-          <Badge key={index} className={`${badge.color} text-white text-xs font-medium px-2 py-1`}>
-            {badge.icon && <span className="mr-1">{badge.icon}</span>}
-            {badge.text}
+          <Badge key={index} className={`${badge.color} text-white text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1`}>
+            {badge.icon && <span className="mr-0.5 sm:mr-1">{badge.icon}</span>}
+            <span className="text-xs">{badge.text}</span>
           </Badge>
         ))}
       </div>
 
-      {/* Car site style action buttons */}
-      <div className="absolute top-3 right-3 z-20 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+      {/* Car site style action buttons - Mobile always visible */}
+      <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-20 flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
         <button
           onClick={handleCompareClick}
-          className={`w-8 h-8 bg-white border border-gray-300 rounded-md flex items-center justify-center transition-colors duration-200 hover:bg-blue-50 ${isInComparison(listing.id) ? 'bg-blue-50 border-blue-300 text-blue-600' : 'text-gray-600'}`}
+          className={`w-7 h-7 sm:w-8 sm:h-8 bg-white border border-gray-300 rounded-md flex items-center justify-center transition-colors duration-200 hover:bg-blue-50 ${isInComparison(listing.id) ? 'bg-blue-50 border-blue-300 text-blue-600' : 'text-gray-600'}`}
           title="Compare"
         >
-          <Scale className="w-4 h-4" />
+          <Scale className="w-3 h-3 sm:w-4 sm:h-4" />
         </button>
         <button
           onClick={handleShareClick}
-          className="w-8 h-8 bg-white border border-gray-300 rounded-md flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors duration-200"
+          className="w-7 h-7 sm:w-8 sm:h-8 bg-white border border-gray-300 rounded-md flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors duration-200"
           title="Save"
         >
-          <Heart className="w-4 h-4" />
+          <Heart className="w-3 h-3 sm:w-4 sm:h-4" />
         </button>
       </div>
       
-      {/* Professional image section like car sites */}
-      <div className="relative h-48 bg-gray-100 overflow-hidden cursor-pointer" onClick={handleViewDetails}>
+      {/* Professional image section like car sites - Mobile responsive */}
+      <div className="relative h-40 sm:h-44 lg:h-48 bg-gray-100 overflow-hidden cursor-pointer" onClick={handleViewDetails}>
         
         {listing.images && listing.images.length > 0 ? (
           <OptimizedImage
@@ -153,35 +153,35 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
           </div>
         )}
         
-        {/* Image count indicator */}
+        {/* Image count indicator - Mobile optimized */}
         {listing.images && listing.images.length > 1 && (
-          <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+          <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
             1 of {listing.images.length}
           </div>
         )}
       </div>
 
-      {/* Professional content section like AutoTrader */}
-      <CardContent className="p-4" onClick={handleViewDetails}>
+      {/* Professional content section like AutoTrader - Mobile optimized */}
+      <CardContent className="p-3 sm:p-4" onClick={handleViewDetails}>
         {/* Price prominently displayed */}
-        <div className="mb-3">
-          <div className="text-2xl font-bold text-gray-900">
+        <div className="mb-2 sm:mb-3">
+          <div className="text-xl sm:text-2xl font-bold text-gray-900">
             {formatPrice(listing.price, listing.currency)}
           </div>
         </div>
 
         {/* Title */}
-        <h3 className="font-semibold text-lg text-gray-900 mb-3 group-hover:text-blue-600 transition-colors leading-tight">
+        <h3 className="font-semibold text-base sm:text-lg text-gray-900 mb-2 sm:mb-3 group-hover:text-blue-600 transition-colors leading-tight">
           {listing.title}
         </h3>
 
-        {/* Key specifications grid */}
-        <div className="grid grid-cols-2 gap-2 mb-3">
+        {/* Key specifications grid - Mobile responsive */}
+        <div className="grid grid-cols-2 gap-1 sm:gap-2 mb-2 sm:mb-3">
           {getKeySpecs().slice(0, 4).map((spec, index) => {
             const IconComponent = spec.icon;
             return (
-              <div key={index} className="flex items-center text-sm text-gray-600">
-                <IconComponent className="h-4 w-4 mr-1 text-gray-400" />
+              <div key={index} className="flex items-center text-xs sm:text-sm text-gray-600">
+                <IconComponent className="h-3 w-3 sm:h-4 sm:w-4 mr-1 text-gray-400" />
                 <span className="truncate" title={`${spec.title}: ${spec.label}`}>
                   {spec.label}
                 </span>
@@ -191,33 +191,34 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
         </div>
 
         {/* Location */}
-        <div className="flex items-center text-sm text-gray-600 mb-3">
-          <MapPin className="h-4 w-4 mr-1 text-gray-400" />
-          {listing.location}
+        <div className="flex items-center text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3">
+          <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 text-gray-400" />
+          <span className="truncate">{listing.location}</span>
         </div>
 
         {/* Dealer info */}
-        <div className="text-xs text-gray-500 border-t pt-2">
+        <div className="text-xs text-gray-500 border-t pt-1.5 sm:pt-2">
           Charly Motors • Verified Dealer
         </div>
       </CardContent>
 
-      {/* Professional footer like car sites */}
-      <CardFooter className="p-4 pt-0 flex gap-2 border-t">
+      {/* Professional footer like car sites - Mobile optimized */}
+      <CardFooter className="p-3 sm:p-4 pt-0 flex gap-2 border-t">
         <Button 
           variant="outline"
           size="sm"
-          className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+          className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors text-xs sm:text-sm py-1.5 sm:py-2"
           onClick={handleViewDetails}
         >
-          View Details
+          <span className="hidden sm:inline">View Details</span>
+          <span className="sm:hidden">View</span>
         </Button>
         <Button 
           size="sm"
-          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white transition-colors text-xs sm:text-sm py-1.5 sm:py-2"
           onClick={handleWhatsAppClick}
         >
-          <Phone className="h-4 w-4 mr-1" />
+          <Phone className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
           Contact
         </Button>
       </CardFooter>

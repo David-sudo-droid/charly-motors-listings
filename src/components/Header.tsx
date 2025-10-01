@@ -32,36 +32,43 @@ export const Header = () => {
 
   return (
     <>
-    {/* Top utility bar like Cars.com */}
-    <div className="bg-gray-800 text-white text-xs py-1">
-      <div className="container mx-auto px-4 flex justify-between items-center">
-        <div className="flex items-center space-x-4">
-          <span className="flex items-center">
-            <MapPin className="h-3 w-3 mr-1" />
-            Serving All Kenya
-          </span>
-          <span>📞 +254 712 345 678</span>
-        </div>
-        <div className="flex items-center space-x-4">
-          <span className="flex items-center">
-            <Award className="h-3 w-3 mr-1" />
-            Trusted Dealer Network
-          </span>
+    {/* Mobile-optimized utility bar */}
+    <div className="bg-gray-800 text-white text-xs py-2 md:py-1">
+      <div className="container mx-auto px-4">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0">
+          <div className="flex items-center space-x-3 text-center sm:text-left">
+            <span className="flex items-center">
+              <MapPin className="h-3 w-3 mr-1" />
+              <span className="hidden xs:inline">Serving All Kenya</span>
+              <span className="xs:hidden">All Kenya</span>
+            </span>
+            <span className="hidden sm:inline">📞 +254 712 345 678</span>
+            <span className="sm:hidden">📞 +254 712 345 678</span>
+          </div>
+          <div className="hidden md:flex items-center">
+            <span className="flex items-center text-xs">
+              <Award className="h-3 w-3 mr-1" />
+              Trusted Dealer Network
+            </span>
+          </div>
         </div>
       </div>
     </div>
     
     <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
-      <div className="container flex h-20 items-center justify-between">
-        {/* Enhanced Logo like AutoTrader */}
-        <Link to="/" className="flex items-center space-x-3">
-          <div className="flex items-center space-x-1 bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-lg">
-            <Car className="h-7 w-7 text-white" />
-            <Home className="h-6 w-6 text-white" />
+      <div className="container flex h-16 md:h-20 items-center justify-between px-4">
+        {/* Mobile-optimized Logo */}
+        <Link to="/" className="flex items-center space-x-2 md:space-x-3">
+          <div className="flex items-center space-x-1 bg-gradient-to-r from-blue-600 to-purple-600 p-1.5 md:p-2 rounded-lg">
+            <Car className="h-5 w-5 md:h-7 md:w-7 text-white" />
+            <Home className="h-4 w-4 md:h-6 md:w-6 text-white" />
           </div>
-          <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">CharlyMotors</h1>
-            <p className="text-sm text-gray-600 -mt-1 font-medium">Cars & Properties</p>
+          <div className="hidden sm:block">
+            <h1 className="text-lg md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">CharlyMotors</h1>
+            <p className="text-xs md:text-sm text-gray-600 -mt-1 font-medium">Cars & Properties</p>
+          </div>
+          <div className="sm:hidden">
+            <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Charly</h1>
           </div>
         </Link>
 
@@ -94,22 +101,23 @@ export const Header = () => {
           )}
         </nav>
 
-        {/* Professional CTA Section like AutoTrader */}
-        <div className="hidden md:flex items-center space-x-3">
+        {/* Desktop CTA Section */}
+        <div className="hidden lg:flex items-center space-x-3">
           {user ? (
             <>
               <Link to="/favorites">
                 <Button variant="ghost" size="sm" className="text-gray-700 hover:text-blue-600">
                   <Heart className="h-4 w-4 mr-1" />
-                  Saved Cars
+                  <span className="hidden xl:inline">Saved Cars</span>
                 </Button>
               </Link>
               <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:border-blue-600 hover:text-blue-600">
                 <User className="h-4 w-4 mr-1" />
-                My Account
+                <span className="hidden xl:inline">My Account</span>
               </Button>
               <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white">
-                List Your Car
+                <span className="hidden xl:inline">List Your Car</span>
+                <span className="xl:hidden">List Car</span>
               </Button>
             </>
           ) : (
@@ -117,69 +125,92 @@ export const Header = () => {
               <Link to="/auth">
                 <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:border-blue-600 hover:text-blue-600">
                   <LogIn className="h-4 w-4 mr-1" />
-                  Sign In
+                  <span className="hidden xl:inline">Sign In</span>
                 </Button>
               </Link>
               <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white font-semibold">
-                List Your Car
+                <span className="hidden xl:inline">List Your Car</span>
+                <span className="xl:hidden">List Car</span>
               </Button>
             </>
           )}
         </div>
 
         {/* Mobile menu button */}
-        <div className="md:hidden">
+        <div className="lg:hidden">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="p-2"
           >
             {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
         </div>
       </div>
 
-      {/* Mobile Navigation */}
+      {/* Enhanced Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t bg-background">
-            <a href="#hero" onClick={() => setIsMenuOpen(false)} className="block px-3 py-2 text-sm font-medium transition-smooth hover:text-primary">Home</a>
-            <a href="#cars" onClick={() => setIsMenuOpen(false)} className="block px-3 py-2 text-sm font-medium transition-smooth hover:text-primary">Cars</a>
-            <a href="#properties" onClick={() => setIsMenuOpen(false)} className="block px-3 py-2 text-sm font-medium transition-smooth hover:text-primary">Properties</a>
-            <a href="#about" onClick={() => setIsMenuOpen(false)} className="block px-3 py-2 text-sm font-medium transition-smooth hover:text-primary">About</a>
-            <a href="#contact" onClick={() => setIsMenuOpen(false)} className="block px-3 py-2 text-sm font-medium transition-smooth hover:text-primary">Contact</a>
-            {isAdmin && (
-              <Link to="/admin" onClick={() => setIsMenuOpen(false)} className="block px-3 py-2 text-sm font-medium transition-smooth hover:text-primary flex items-center gap-2">
-                <Settings className="h-4 w-4" />
-                Admin Panel
-              </Link>
-            )}
+        <div className="lg:hidden border-t bg-white">
+          <div className="px-4 py-3 space-y-1">
+            {/* Navigation Links */}
+            <a href="#cars" onClick={() => setIsMenuOpen(false)} className="flex items-center px-3 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors">
+              <Car className="h-5 w-5 mr-3" />
+              Buy Cars
+            </a>
+            <a href="#properties" onClick={() => setIsMenuOpen(false)} className="flex items-center px-3 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors">
+              <Home className="h-5 w-5 mr-3" />
+              Real Estate
+            </a>
+            <a href="#financing" onClick={() => setIsMenuOpen(false)} className="flex items-center px-3 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors">
+              <Calculator className="h-5 w-5 mr-3" />
+              Finance
+            </a>
+            <a href="#about" onClick={() => setIsMenuOpen(false)} className="flex items-center px-3 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors">
+              About Us
+            </a>
             
-            {user ? (
-              <div className="space-y-2 pt-2 px-3">
-                <div className="text-xs text-muted-foreground mb-2">
-                  Welcome, {user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'}
-                  {isAdmin && <span className="ml-2 text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded">Admin</span>}
-                </div>
-                <Link to="/favorites" onClick={() => setIsMenuOpen(false)}>
-                  <Button variant="ghost" size="sm" className="w-full justify-start">
-                    <Heart className="h-4 w-4 mr-2" />
-                    Favorites
+            {/* User Section */}
+            <div className="border-t pt-3 mt-3">
+              {user ? (
+                <div className="space-y-2">
+                  <div className="px-3 py-2 text-sm text-gray-600">
+                    Welcome, {user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'}
+                    {isAdmin && <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">Admin</span>}
+                  </div>
+                  <Link to="/favorites" onClick={() => setIsMenuOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start text-base py-3">
+                      <Heart className="h-5 w-5 mr-3" />
+                      Saved Cars
+                    </Button>
+                  </Link>
+                  {isAdmin && (
+                    <Link to="/admin" onClick={() => setIsMenuOpen(false)}>
+                      <Button variant="ghost" className="w-full justify-start text-base py-3">
+                        <Settings className="h-5 w-5 mr-3" />
+                        Admin Panel
+                      </Button>
+                    </Link>
+                  )}
+                  <Button variant="outline" className="w-full text-base py-3" onClick={() => { handleSignOut(); setIsMenuOpen(false); }}>
+                    <LogOut className="h-5 w-5 mr-3" />
+                    Sign Out
                   </Button>
-                </Link>
-                <Button variant="outline" size="sm" className="w-full" onClick={handleSignOut}>
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Sign Out
-                </Button>
-              </div>
-            ) : (
-              <Link to="/auth" className="block px-3 pt-2" onClick={() => setIsMenuOpen(false)}>
-                <Button size="sm" className="w-full">
-                  <LogIn className="h-4 w-4 mr-2" />
-                  Sign In
-                </Button>
-              </Link>
-            )}
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
+                    <Button variant="outline" className="w-full text-base py-3">
+                      <LogIn className="h-5 w-5 mr-3" />
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white text-base py-3">
+                    List Your Car
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

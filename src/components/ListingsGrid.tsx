@@ -193,78 +193,79 @@ export const ListingsGrid = () => {
   }
 
   return (
-    <section id="listings" className="py-20 bg-gradient-to-br from-gray-50/50 via-white to-blue-50/30 min-h-screen">
-      <div className="container mx-auto px-4 max-w-7xl">
-        {/* Modern Header */}
-        <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent leading-tight">
+    <section id="listings" className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-gray-50/50 via-white to-blue-50/30 min-h-screen">
+      <div className="container mx-auto px-3 sm:px-4 max-w-7xl">
+        {/* Modern Header - Mobile optimized */}
+        <div className="text-center mb-8 sm:mb-12 lg:mb-16 animate-fade-in">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent leading-tight">
             Premium <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Listings</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
             Discover exceptional vehicles and properties with unmatched quality and competitive prices
           </p>
-          <div className="mt-8 flex justify-center">
-            <div className="h-1 w-24 bg-gradient-to-r from-primary to-accent rounded-full"></div>
+          <div className="mt-4 sm:mt-6 lg:mt-8 flex justify-center">
+            <div className="h-1 w-16 sm:w-20 lg:w-24 bg-gradient-to-r from-primary to-accent rounded-full"></div>
           </div>
         </div>
 
-        {/* Modern Search Filters */}
-        <div className="mb-12">
+        {/* Modern Search Filters - Mobile optimized */}
+        <div className="mb-8 sm:mb-10 lg:mb-12">
           {!showFilters ? (
-            <div className="flex flex-col sm:flex-row gap-6 items-center justify-between p-6 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/30 animate-slide-up">
-              <div className="flex items-center gap-6 flex-1">
-                <div className="relative flex-1 max-w-lg">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <div className="flex flex-col gap-4 sm:gap-6 p-4 sm:p-6 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/30 animate-slide-up">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-stretch sm:items-center">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
                   <input
                     type="text"
                     placeholder="Search vehicles and properties..."
                     value={filters.searchQuery}
                     onChange={(e) => setFilters({ ...filters, searchQuery: e.target.value })}
-                    className="w-full pl-12 pr-4 py-3 bg-white/70 backdrop-blur-sm border border-white/40 rounded-full focus:ring-2 focus:ring-primary/30 focus:border-primary/50 focus:bg-white/90 transition-all duration-300 text-gray-700 placeholder-gray-400 shadow-sm"
+                    className="w-full pl-10 sm:pl-12 pr-4 py-3 bg-white/70 backdrop-blur-sm border border-white/40 rounded-full focus:ring-2 focus:ring-primary/30 focus:border-primary/50 focus:bg-white/90 transition-all duration-300 text-sm sm:text-base text-gray-700 placeholder-gray-400 shadow-sm"
                   />
                 </div>
-                <div className="flex flex-wrap gap-3">
-                  <Badge 
-                    className={`cursor-pointer px-4 py-2 rounded-full transition-all duration-300 transform hover:scale-105 ${
-                      filters.type === 'all' 
-                        ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg' 
-                        : 'bg-white/70 text-gray-600 hover:bg-white/90 border border-white/40'
-                    }`}
-                    onClick={() => setFilters({ ...filters, type: 'all' })}
-                  >
-                    All ({allListings.length})
-                  </Badge>
-                  <Badge 
-                    className={`cursor-pointer px-4 py-2 rounded-full transition-all duration-300 transform hover:scale-105 ${
-                      filters.type === 'car' 
-                        ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg' 
-                        : 'bg-white/70 text-gray-600 hover:bg-white/90 border border-white/40'
-                    }`}
-                    onClick={() => setFilters({ ...filters, type: 'car' })}
-                  >
-                    <Car className="h-3 w-3 mr-1" />
-                    Cars ({allListings.filter(l => l.type === 'car').length})
-                  </Badge>
-                  <Badge 
-                    className={`cursor-pointer px-4 py-2 rounded-full transition-all duration-300 transform hover:scale-105 ${
-                      filters.type === 'property' 
-                        ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg' 
-                        : 'bg-white/70 text-gray-600 hover:bg-white/90 border border-white/40'
-                    }`}
-                    onClick={() => setFilters({ ...filters, type: 'property' })}
-                  >
-                    <Home className="h-3 w-3 mr-1" />
-                    Properties ({allListings.filter(l => l.type === 'property').length})
-                  </Badge>
-                </div>
+                <Button 
+                  onClick={() => setShowFilters(true)}
+                  className="bg-white/80 backdrop-blur-sm text-gray-700 border border-white/40 hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 hover:border-primary/30 transition-all duration-300 px-4 sm:px-6 py-3 rounded-full shadow-md hover:shadow-lg transform hover:scale-105 whitespace-nowrap"
+                >
+                  <Filter className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Advanced Filters</span>
+                  <span className="sm:hidden">Filters</span>
+                </Button>
               </div>
-              <Button 
-                onClick={() => setShowFilters(true)}
-                className="bg-white/80 backdrop-blur-sm text-gray-700 border border-white/40 hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 hover:border-primary/30 transition-all duration-300 px-6 py-3 rounded-full shadow-md hover:shadow-lg transform hover:scale-105"
-              >
-                <Filter className="h-4 w-4 mr-2" />
-                Advanced Filters
-              </Button>
+              <div className="flex flex-wrap gap-2 sm:gap-3 justify-center">
+                <Badge 
+                  className={`cursor-pointer px-3 sm:px-4 py-1.5 sm:py-2 rounded-full transition-all duration-300 transform hover:scale-105 text-xs sm:text-sm ${
+                    filters.type === 'all' 
+                      ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg' 
+                      : 'bg-white/70 text-gray-600 hover:bg-white/90 border border-white/40'
+                  }`}
+                  onClick={() => setFilters({ ...filters, type: 'all' })}
+                >
+                  All ({allListings.length})
+                </Badge>
+                <Badge 
+                  className={`cursor-pointer px-3 sm:px-4 py-1.5 sm:py-2 rounded-full transition-all duration-300 transform hover:scale-105 text-xs sm:text-sm ${
+                    filters.type === 'car' 
+                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg' 
+                      : 'bg-white/70 text-gray-600 hover:bg-white/90 border border-white/40'
+                  }`}
+                  onClick={() => setFilters({ ...filters, type: 'car' })}
+                >
+                  <Car className="h-3 w-3 mr-1" />
+                  Cars ({allListings.filter(l => l.type === 'car').length})
+                </Badge>
+                <Badge 
+                  className={`cursor-pointer px-3 sm:px-4 py-1.5 sm:py-2 rounded-full transition-all duration-300 transform hover:scale-105 text-xs sm:text-sm ${
+                    filters.type === 'property' 
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg' 
+                      : 'bg-white/70 text-gray-600 hover:bg-white/90 border border-white/40'
+                  }`}
+                  onClick={() => setFilters({ ...filters, type: 'property' })}
+                >
+                  <Home className="h-3 w-3 mr-1" />
+                  Properties ({allListings.filter(l => l.type === 'property').length})
+                </Badge>
+              </div>
             </div>
           ) : (
             <div className="space-y-4">
@@ -288,16 +289,16 @@ export const ListingsGrid = () => {
           )}
         </div>
 
-        {/* Results Summary */}
-        <div className="flex items-center justify-between mb-6">
-          <p className="text-muted-foreground">
+        {/* Results Summary - Mobile optimized */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
+          <p className="text-sm sm:text-base text-muted-foreground">
             Showing {filteredListings.length} of {allListings.length} listings
           </p>
           {(filters.searchQuery || filters.location || filters.condition.length > 0 || 
             filters.transmission.length > 0 || filters.fuelType.length > 0 || 
             filters.propertyType.length > 0 || filters.features.length > 0) && (
-            <Button variant="ghost" size="sm" onClick={handleResetFilters}>
-              <X className="h-4 w-4 mr-2" />
+            <Button variant="ghost" size="sm" onClick={handleResetFilters} className="text-xs sm:text-sm">
+              <X className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
               Clear all filters
             </Button>
           )}
@@ -313,18 +314,18 @@ export const ListingsGrid = () => {
           </div>
         ) : (
           <>
-            {/* Modern Featured Listings Section */}
+            {/* Modern Featured Listings Section - Mobile optimized */}
             {featuredListings.length > 0 && (
-              <div className="mb-16">
-                <div className="flex items-center justify-center gap-4 mb-10">
-                  <div className="h-px w-16 bg-gradient-to-r from-transparent to-primary"></div>
-                  <h3 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent text-center">
+              <div className="mb-10 sm:mb-12 lg:mb-16">
+                <div className="flex items-center justify-center gap-2 sm:gap-4 mb-6 sm:mb-8 lg:mb-10">
+                  <div className="hidden sm:block h-px w-8 sm:w-12 lg:w-16 bg-gradient-to-r from-transparent to-primary"></div>
+                  <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent text-center">
                     Featured Listings
                   </h3>
-                  <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-lg animate-bounce-subtle px-3 py-1">Premium</Badge>
-                  <div className="h-px w-16 bg-gradient-to-l from-transparent to-accent"></div>
+                  <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-lg animate-bounce-subtle px-2 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm">Premium</Badge>
+                  <div className="hidden sm:block h-px w-8 sm:w-12 lg:w-16 bg-gradient-to-l from-transparent to-accent"></div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                   {featuredListings.map((listing) => (
                     <ListingCard
                       key={listing.id}
@@ -336,17 +337,17 @@ export const ListingsGrid = () => {
               </div>
             )}
 
-            {/* Modern Regular Listings */}
+            {/* Modern Regular Listings - Mobile optimized */}
             {regularListings.length > 0 && (
               <div>
-                <div className="flex items-center justify-center gap-4 mb-10">
-                  <div className="h-px w-20 bg-gradient-to-r from-transparent to-gray-300"></div>
-                  <h3 className="text-3xl font-bold text-gray-700 text-center">
+                <div className="flex items-center justify-center gap-2 sm:gap-4 mb-6 sm:mb-8 lg:mb-10">
+                  <div className="hidden sm:block h-px w-12 sm:w-16 lg:w-20 bg-gradient-to-r from-transparent to-gray-300"></div>
+                  <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-700 text-center px-2">
                     {featuredListings.length > 0 ? "All Listings" : "Our Premium Collection"}
                   </h3>
-                  <div className="h-px w-20 bg-gradient-to-l from-transparent to-gray-300"></div>
+                  <div className="hidden sm:block h-px w-12 sm:w-16 lg:w-20 bg-gradient-to-l from-transparent to-gray-300"></div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                   {regularListings.map((listing) => (
                     <ListingCard
                       key={listing.id}
@@ -358,21 +359,25 @@ export const ListingsGrid = () => {
               </div>
             )}
 
-            {/* Modern Load More Button */}
+            {/* Modern Load More Button - Mobile optimized */}
             {hasNextPage && (
-              <div className="text-center mt-16">
+              <div className="text-center mt-10 sm:mt-12 lg:mt-16">
                 <Button 
                   onClick={() => fetchNextPage()}
                   disabled={isFetchingNextPage}
-                  className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white border-0 px-12 py-4 text-lg rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white border-0 px-8 sm:px-10 lg:px-12 py-3 sm:py-4 text-sm sm:text-base lg:text-lg rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none w-full sm:w-auto"
                 >
                   {isFetchingNextPage ? (
                     <>
-                      <Loader2 className="h-5 w-5 animate-spin mr-3" />
-                      Loading more amazing listings...
+                      <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin mr-2 sm:mr-3" />
+                      <span className="hidden sm:inline">Loading more amazing listings...</span>
+                      <span className="sm:hidden">Loading more...</span>
                     </>
                   ) : (
-                    `Load More Amazing Listings`
+                    <>
+                      <span className="hidden sm:inline">Load More Amazing Listings</span>
+                      <span className="sm:hidden">Load More Listings</span>
+                    </>
                   )}
                 </Button>
               </div>

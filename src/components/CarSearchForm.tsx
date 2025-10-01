@@ -78,15 +78,15 @@ const CarSearchForm = () => {
   const hasActiveFilters = Object.values(filters).some(value => value !== '');
 
   return (
-    <div className="bg-white shadow-lg rounded-xl p-6 mx-4 -mt-10 relative z-20 border">
+    <div className="bg-white shadow-lg rounded-xl p-3 sm:p-4 lg:p-6 mx-2 sm:mx-4 -mt-10 relative z-20 border">
       {/* Quick Search Bar - Similar to Cars.com */}
-      <div className="flex flex-col lg:flex-row gap-4 mb-6">
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="flex flex-col lg:flex-row gap-4 mb-4 sm:mb-6">
+        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {/* Make */}
           <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">Make</label>
+            <label className="text-xs sm:text-sm font-medium text-gray-700">Make</label>
             <Select value={filters.make} onValueChange={(value) => setFilters({...filters, make: value})}>
-              <SelectTrigger className="h-12">
+              <SelectTrigger className="h-10 sm:h-12">
                 <SelectValue placeholder="Any Make" />
               </SelectTrigger>
               <SelectContent>
@@ -99,9 +99,9 @@ const CarSearchForm = () => {
 
           {/* Model */}
           <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">Model</label>
+            <label className="text-xs sm:text-sm font-medium text-gray-700">Model</label>
             <Select value={filters.model} onValueChange={(value) => setFilters({...filters, model: value})}>
-              <SelectTrigger className="h-12">
+              <SelectTrigger className="h-10 sm:h-12">
                 <SelectValue placeholder="Any Model" />
               </SelectTrigger>
               <SelectContent>
@@ -113,9 +113,9 @@ const CarSearchForm = () => {
 
           {/* Price Range */}
           <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">Max Price</label>
+            <label className="text-xs sm:text-sm font-medium text-gray-700">Max Price</label>
             <Select value={filters.priceMax} onValueChange={(value) => setFilters({...filters, priceMax: value})}>
-              <SelectTrigger className="h-12">
+              <SelectTrigger className="h-10 sm:h-12">
                 <SelectValue placeholder="Any Price" />
               </SelectTrigger>
               <SelectContent>
@@ -130,9 +130,9 @@ const CarSearchForm = () => {
 
           {/* Location */}
           <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">Location</label>
+            <label className="text-xs sm:text-sm font-medium text-gray-700">Location</label>
             <Select value={filters.location} onValueChange={(value) => setFilters({...filters, location: value})}>
-              <SelectTrigger className="h-12">
+              <SelectTrigger className="h-10 sm:h-12">
                 <SelectValue placeholder="All Kenya" />
               </SelectTrigger>
               <SelectContent>
@@ -148,38 +148,39 @@ const CarSearchForm = () => {
         <div className="flex items-end">
           <Button 
             onClick={handleSearch}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 h-12 text-lg font-semibold rounded-lg"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 lg:px-8 py-2 sm:py-3 h-10 sm:h-12 text-sm sm:text-base lg:text-lg font-semibold rounded-lg w-full lg:w-auto"
           >
-            <Search className="h-5 w-5 mr-2" />
-            Search Cars
+            <Search className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">Search Cars</span>
+            <span className="sm:hidden">Search</span>
           </Button>
         </div>
       </div>
 
       {/* Advanced Filters Toggle */}
-      <div className="flex items-center justify-between border-t pt-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-t pt-3 sm:pt-4 gap-3 sm:gap-0">
         <Button
           variant="ghost"
           onClick={() => setShowAdvanced(!showAdvanced)}
-          className="text-blue-600 hover:text-blue-700 font-medium"
+          className="text-blue-600 hover:text-blue-700 font-medium text-sm sm:text-base p-2 sm:p-4"
         >
           <Filter className="h-4 w-4 mr-2" />
           {showAdvanced ? 'Hide' : 'Show'} Advanced Filters
         </Button>
 
         {hasActiveFilters && (
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">Active filters:</span>
-            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs sm:text-sm text-gray-600">Active filters:</span>
+            <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
               {Object.values(filters).filter(v => v).length} filters
             </Badge>
             <Button
               variant="ghost"
               size="sm"
               onClick={clearFilters}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-gray-500 hover:text-gray-700 text-xs sm:text-sm p-1 sm:p-2"
             >
-              <X className="h-4 w-4 mr-1" />
+              <X className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
               Clear All
             </Button>
           </div>
@@ -188,14 +189,14 @@ const CarSearchForm = () => {
 
       {/* Advanced Filters Panel */}
       {showAdvanced && (
-        <div className="border-t mt-4 pt-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Refine Your Search</h3>
+        <div className="border-t mt-3 sm:mt-4 pt-4 sm:pt-6">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4">Refine Your Search</h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {/* Year Range */}
-            <div className="space-y-3">
-              <label className="text-sm font-medium text-gray-700 flex items-center">
-                <Calendar className="h-4 w-4 mr-2" />
+            <div className="space-y-2 sm:space-y-3">
+              <label className="text-xs sm:text-sm font-medium text-gray-700 flex items-center">
+                <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                 Year Range
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -223,9 +224,9 @@ const CarSearchForm = () => {
             </div>
 
             {/* Price Range */}
-            <div className="space-y-3">
-              <label className="text-sm font-medium text-gray-700 flex items-center">
-                <DollarSign className="h-4 w-4 mr-2" />
+            <div className="space-y-2 sm:space-y-3">
+              <label className="text-xs sm:text-sm font-medium text-gray-700 flex items-center">
+                <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                 Price Range (KSH)
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -245,9 +246,9 @@ const CarSearchForm = () => {
             </div>
 
             {/* Mileage */}
-            <div className="space-y-3">
-              <label className="text-sm font-medium text-gray-700 flex items-center">
-                <Gauge className="h-4 w-4 mr-2" />
+            <div className="space-y-2 sm:space-y-3">
+              <label className="text-xs sm:text-sm font-medium text-gray-700 flex items-center">
+                <Gauge className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                 Max Mileage (KM)
               </label>
               <Select value={filters.mileageMax} onValueChange={(value) => setFilters({...filters, mileageMax: value})}>
@@ -264,9 +265,9 @@ const CarSearchForm = () => {
             </div>
 
             {/* Body Type */}
-            <div className="space-y-3">
-              <label className="text-sm font-medium text-gray-700 flex items-center">
-                <Car className="h-4 w-4 mr-2" />
+            <div className="space-y-2 sm:space-y-3">
+              <label className="text-xs sm:text-sm font-medium text-gray-700 flex items-center">
+                <Car className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                 Body Type
               </label>
               <Select value={filters.bodyType} onValueChange={(value) => setFilters({...filters, bodyType: value})}>
@@ -282,8 +283,8 @@ const CarSearchForm = () => {
             </div>
 
             {/* Fuel Type */}
-            <div className="space-y-3">
-              <label className="text-sm font-medium text-gray-700">Fuel Type</label>
+            <div className="space-y-2 sm:space-y-3">
+              <label className="text-xs sm:text-sm font-medium text-gray-700">Fuel Type</label>
               <Select value={filters.fuelType} onValueChange={(value) => setFilters({...filters, fuelType: value})}>
                 <SelectTrigger>
                   <SelectValue placeholder="Any Fuel Type" />
@@ -297,8 +298,8 @@ const CarSearchForm = () => {
             </div>
 
             {/* Transmission */}
-            <div className="space-y-3">
-              <label className="text-sm font-medium text-gray-700">Transmission</label>
+            <div className="space-y-2 sm:space-y-3">
+              <label className="text-xs sm:text-sm font-medium text-gray-700">Transmission</label>
               <Select value={filters.transmission} onValueChange={(value) => setFilters({...filters, transmission: value})}>
                 <SelectTrigger>
                   <SelectValue placeholder="Any Transmission" />
@@ -313,13 +314,14 @@ const CarSearchForm = () => {
           </div>
 
           {/* Advanced Search Button */}
-          <div className="flex justify-center mt-6">
+          <div className="flex justify-center mt-4 sm:mt-6">
             <Button 
               onClick={handleSearch}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-3 text-lg font-semibold rounded-lg"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 lg:px-12 py-2 sm:py-3 text-sm sm:text-base lg:text-lg font-semibold rounded-lg w-full sm:w-auto"
             >
-              <Search className="h-5 w-5 mr-2" />
-              Search with Filters
+              <Search className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Search with Filters</span>
+              <span className="sm:hidden">Apply Filters</span>
             </Button>
           </div>
         </div>

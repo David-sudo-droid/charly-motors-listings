@@ -41,34 +41,38 @@ const Hero = () => {
             </div>
           </div>
 
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 leading-tight animate-fade-in">
-            <span className="block text-white mb-2">Find Your Perfect</span>
+          <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-6 md:mb-8 leading-tight animate-fade-in px-4 sm:px-0">
+            <span className="block text-white mb-1 md:mb-2">Find Your Perfect</span>
             <span className="block bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent animate-shimmer bg-300% bg-pos-0">
-              Dream Ride & Home
+              <span className="sm:hidden">Dream Car</span>
+              <span className="hidden sm:inline">Dream Ride & Home</span>
             </span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-white/80 mb-12 max-w-4xl mx-auto leading-relaxed animate-slide-up">
-            Discover premium automotive and real estate solutions across Kenya. 
-            <span className="text-cyan-300 font-semibold">Quality guaranteed</span>, 
-            unbeatable prices, and exceptional service that exceeds expectations.
+          <p className="text-lg sm:text-xl md:text-2xl text-white/80 mb-8 md:mb-12 max-w-4xl mx-auto leading-relaxed animate-slide-up px-4 sm:px-0">
+            <span className="hidden sm:inline">Discover premium automotive and real estate solutions across Kenya.</span>
+            <span className="sm:hidden">Quality cars and properties in Kenya.</span>
+            <span className="text-cyan-300 font-semibold"> Quality guaranteed</span><span className="hidden sm:inline">, 
+            unbeatable prices, and exceptional service that exceeds expectations</span><span className="sm:hidden">!</span>
           </p>
 
-          {/* Modern glass morphism CTA buttons */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-center mb-20">
+          {/* Mobile-optimized CTA buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mb-12 sm:mb-20 px-4 sm:px-0">
             <Button 
-              className="text-xl px-12 py-5 bg-gradient-to-r from-cyan-500/80 to-blue-600/80 backdrop-blur-md border border-white/20 hover:from-cyan-400/90 hover:to-blue-500/90 text-white font-bold shadow-2xl hover:shadow-cyan-500/25 transition-all duration-500 transform hover:scale-105 hover:-translate-y-1 rounded-full"
+              className="text-lg sm:text-xl px-8 sm:px-12 py-4 sm:py-5 bg-gradient-to-r from-cyan-500/80 to-blue-600/80 backdrop-blur-md border border-white/20 hover:from-cyan-400/90 hover:to-blue-500/90 text-white font-bold shadow-2xl hover:shadow-cyan-500/25 transition-all duration-500 transform hover:scale-105 hover:-translate-y-1 rounded-full w-full sm:w-auto"
               onClick={() => scrollToSection('cars')}
             >
-              <Car className="h-6 w-6 mr-3" />
-              🚗 Browse Premium Cars
+              <Car className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3" />
+              <span className="sm:hidden">🚗 Browse Cars</span>
+              <span className="hidden sm:inline">🚗 Browse Premium Cars</span>
             </Button>
             <Button 
-              className="text-xl px-12 py-5 bg-white/10 backdrop-blur-md border border-white/30 hover:bg-white/20 text-white font-bold shadow-2xl hover:shadow-white/25 transition-all duration-500 transform hover:scale-105 hover:-translate-y-1 rounded-full"
+              className="text-lg sm:text-xl px-8 sm:px-12 py-4 sm:py-5 bg-white/10 backdrop-blur-md border border-white/30 hover:bg-white/20 text-white font-bold shadow-2xl hover:shadow-white/25 transition-all duration-500 transform hover:scale-105 hover:-translate-y-1 rounded-full w-full sm:w-auto"
               onClick={() => scrollToSection('properties')}
             >
-              <Home className="h-6 w-6 mr-3" />
-              🏠 Explore Properties
+              <Home className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3" />
+              <span className="sm:hidden">🏠 Properties</span>
+              <span className="hidden sm:inline">🏠 Explore Properties</span>
             </Button>
           </div>
 
