@@ -16,7 +16,9 @@ export interface Listing {
   featured: boolean;
 }
 
-const LISTINGS_PER_PAGE = 9; // Reduced from 12 for faster initial load
+const LISTINGS_PER_PAGE = 12; // Optimized page size for better performance
+const CACHE_TIME = 15 * 60 * 1000; // 15 minutes cache
+const STALE_TIME = 5 * 60 * 1000; // 5 minutes stale time
 
 const transformListing = (item: any): Listing => ({
   id: item.id,
@@ -25,22 +27,19 @@ const transformListing = (item: any): Listing => ({
   price: item.price,
   currency: item.currency,
   location: item.location,
-  images: item.images,
+  images: item.images || [], // Ensure images is always an array
   description: item.description,
-  features: item.features,
-  specifications: item.specifications,
+  features: item.features || [], // Ensure features is always an array
+  specifications: item.specifications || {},
   whatsappNumber: item.whatsapp_number,
-  featured: item.featured,
+  featured: item.featured || false,
 });
 
-export const useListings = () => {
-  return useInfiniteQuery({
-    queryKey: ['listings'],
-    queryFn: async ({ pageParam = 0 }) => {
-      const from = pageParam * LISTINGS_PER_PAGE;
-      const to = from + LISTINGS_PER_PAGE - 1;
-
-      // Select only necessary fields for better performance
+// Separate hook for featured listings (loads first)
+export const useFeaturedListings = () => {
+  return useQuery({
+    queryKey: ['listings', 'featured'],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from('listings')
         .select(`
@@ -51,13 +50,46 @@ export const useListings = () => {
           currency,
           location,
           images,
-          description,
-          features,
-          specifications,
           whatsapp_number,
           featured,
           created_at
         `)
+        .eq('featured', true)
+        .order('created_at', { ascending: false })
+        .limit(3); // Only get first 3 featured items
+
+      if (error) throw error;
+      return (data || []).map(transformListing);
+    },
+    staleTime: STALE_TIME,
+    gcTime: CACHE_TIME,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: true,
+  });
+};
+
+// Main listings hook with optimizations
+export const useListings = () => {
+  return useInfiniteQuery({
+    queryKey: ['listings', 'all'],
+    queryFn: async ({ pageParam = 0 }) => {
+      const from = pageParam * LISTINGS_PER_PAGE;
+      const to = from + LISTINGS_PER_PAGE - 1;
+
+      // Heavily optimized query - only essential fields for list view
+      const { data, error, count } = await supabase
+        .from('listings')
+        .select(`
+          id,
+          type,
+          title,
+          price,
+          currency,
+          location,
+          images,
+          whatsapp_number,
+          featured
+        `, { count: pageParam === 0 ? 'estimated' : null })
         .order('featured', { ascending: false })
         .order('created_at', { ascending: false })
         .range(from, to);
@@ -67,14 +99,38 @@ export const useListings = () => {
       return {
         listings: (data || []).map(transformListing),
         nextPage: data && data.length === LISTINGS_PER_PAGE ? pageParam + 1 : undefined,
+        hasMore: data && data.length === LISTINGS_PER_PAGE,
+        totalCount: count,
       };
     },
     getNextPageParam: (lastPage) => lastPage.nextPage,
-    staleTime: 10 * 60 * 1000, // Cache for 10 minutes (increased)
-    gcTime: 20 * 60 * 1000, // Keep in memory for 20 minutes (increased)
+    staleTime: STALE_TIME,
+    gcTime: CACHE_TIME,
     initialPageParam: 0,
-    // Enable background refetching for better UX
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
+    // Prefetch next page for smoother experience
+    getPreviousPageParam: (firstPage, allPages) => 
+      allPages.length > 1 ? allPages.length - 2 : undefined,
+  });
+};
+
+// Hook for individual listing details (lazy loaded)
+export const useListingDetails = (id: string) => {
+  return useQuery({
+    queryKey: ['listing', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('listings')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      return transformListing(data);
+    },
+    enabled: !!id,
+    staleTime: CACHE_TIME,
+    gcTime: CACHE_TIME * 2,
   });
 };

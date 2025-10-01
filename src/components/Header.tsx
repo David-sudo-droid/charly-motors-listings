@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Car, Home, Menu, X, LogIn, LogOut, User, Settings, Heart, Search, MapPin, Calculator, Award } from "lucide-react";
+import { Car, Home, Menu, X, LogIn, LogOut, User, Settings, Heart, Search, MapPin, Award } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
@@ -82,10 +82,7 @@ export const Header = () => {
             <Home className="h-4 w-4" />
             Real Estate
           </a>
-          <a href="#financing" className="text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors flex items-center gap-1">
-            <Calculator className="h-4 w-4" />
-            Finance
-          </a>
+
           <a href="#research" className="text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors flex items-center gap-1">
             <Search className="h-4 w-4" />
             Research
@@ -162,10 +159,7 @@ export const Header = () => {
               <Home className="h-5 w-5 mr-3" />
               Real Estate
             </a>
-            <a href="#financing" onClick={() => setIsMenuOpen(false)} className="flex items-center px-3 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors">
-              <Calculator className="h-5 w-5 mr-3" />
-              Finance
-            </a>
+
             <a href="#about" onClick={() => setIsMenuOpen(false)} className="flex items-center px-3 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors">
               About Us
             </a>

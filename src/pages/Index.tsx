@@ -5,7 +5,7 @@ import ListingsGrid from "@/components/ListingsGrid";
 import ComparisonBar from "@/components/ComparisonBar";
 import ComparisonModal from "@/components/ComparisonModal";
 import ComparisonDebug from "@/components/ComparisonDebug";
-import FinancingCalculator from "@/components/FinancingCalculator";
+
 import { useComparison } from "@/hooks/useComparison";
 
 const Index = () => {
@@ -25,20 +25,7 @@ const Index = () => {
       {/* Cars Section - Direct integration */}
       <ListingsGrid />
       
-      {/* Financing Section */}
-      <section id="financing" className="py-12 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
-              Car Financing
-            </h2>
-            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
-              Calculate your monthly payments and get financing with competitive rates.
-            </p>
-          </div>
-          <FinancingCalculator />
-        </div>
-      </section>
+
 
       {/* Properties Section */}
       <section id="properties" className="py-8 bg-muted/50">
@@ -66,7 +53,7 @@ const Index = () => {
               <ul className="space-y-1 text-sm opacity-90">
                 <li><a href="#listings" className="hover:text-accent transition-smooth">Cars</a></li>
                 <li><a href="#properties" className="hover:text-accent transition-smooth">Properties</a></li>
-                <li><a href="#financing" className="hover:text-accent transition-smooth">Financing</a></li>
+
               </ul>
             </div>
             <div>

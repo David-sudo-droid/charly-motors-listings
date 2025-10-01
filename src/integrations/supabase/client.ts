@@ -13,5 +13,19 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
+  },
+  db: {
+    schema: 'public'
+  },
+  global: {
+    headers: {
+      'X-Client-Info': 'charly-motors-web',
+      'Connection': 'keep-alive'
+    }
+  },
+  // Enhanced performance optimizations
+  realtime: {
+    timeout: 15000,
+    heartbeatIntervalMs: 20000,
   }
 });

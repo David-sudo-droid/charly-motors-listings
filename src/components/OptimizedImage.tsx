@@ -28,7 +28,7 @@ const OptimizedImage = ({
   const [isInView, setIsInView] = useState(priority);
   const imgRef = useRef<HTMLImageElement>(null);
 
-  // Intersection Observer for lazy loading
+  // Optimized Intersection Observer for lazy loading
   useEffect(() => {
     if (priority) return; // Skip observer if priority loading
 
@@ -41,25 +41,34 @@ const OptimizedImage = ({
         }
       },
       {
-        threshold: 0.1,
-        rootMargin: '50px'
+        threshold: 0.05, // Reduced threshold for earlier loading
+        rootMargin: '100px' // Increased margin for prefetching
       }
     );
 
-    if (imgRef.current) {
-      observer.observe(imgRef.current);
+    const currentRef = imgRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
     }
 
-    return () => observer.disconnect();
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+      observer.disconnect();
+    };
   }, [priority]);
 
-  // Optimize Unsplash URLs with proper dimensions and quality
+  // Aggressively optimize image URLs for better performance
   const getOptimizedImageUrl = (url: string) => {
     if (!url.includes('unsplash.com')) return url;
     
-    // Extract base URL and add optimization parameters
+    // Extract base URL and add aggressive optimization parameters
     const baseUrl = url.split('?')[0];
-    return `${baseUrl}?w=${width}&h=${height}&fit=crop&q=${quality}&auto=format`;
+    // Use smaller dimensions for better loading speed
+    const optWidth = Math.min(width, 600); // Max 600px width
+    const optHeight = Math.min(height, 400); // Max 400px height
+    return `${baseUrl}?w=${optWidth}&h=${optHeight}&fit=crop&q=${quality}&auto=format&fm=webp`;
   };
 
   const handleLoad = () => {

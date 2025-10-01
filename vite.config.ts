@@ -15,4 +15,27 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Vendor chunk
+          vendor: ['react', 'react-dom'],
+          // UI library chunks
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-slot', 'class-variance-authority'],
+          // Heavy dependencies
+          query: ['@tanstack/react-query'],
+          supabase: ['@supabase/supabase-js'],
+          // Icons
+          icons: ['lucide-react'],
+        }
+      }
+    },
+    // Optimize chunk size
+    chunkSizeWarningLimit: 1000,
+    target: 'es2015',
+    cssCodeSplit: true,
+    sourcemap: false, // Disable for production
+    minify: 'esbuild',
+  },
 }));

@@ -1,13 +1,14 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import ListingCard from "./ListingCard";
 import ListingModal from "./ListingModal";
 import AdvancedSearchFilters, { AdvancedFilters } from "./AdvancedSearchFilters";
-import { useListings, type Listing } from "@/hooks/useListings";
+import { useListings, useFeaturedListings, type Listing } from "@/hooks/useListings";
 import { usePerformanceMonitoring, useQueryPerformanceMonitoring } from "@/hooks/usePerformanceMonitoring";
-import { Loader2, Search, Car, Home, Filter, X } from "lucide-react";
+import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
+import { Loader2, Search, Car, Home, Filter, X, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+import ListingsSkeleton from "./ListingsSkeleton";
 
 // Custom hook for debounced search
 const useDebounce = (value: string, delay: number) => {
@@ -27,14 +28,19 @@ const useDebounce = (value: string, delay: number) => {
 };
 
 export const ListingsGrid = () => {
+  // Load featured listings first for faster perceived performance
+  const { data: featuredData, isLoading: featuredLoading } = useFeaturedListings();
   const { data, fetchNextPage, hasNextPage, isLoading, isFetchingNextPage } = useListings();
   
   // Performance monitoring
   usePerformanceMonitoring('ListingsGrid');
-  useQueryPerformanceMonitoring(['listings'], data, isLoading);
+  useQueryPerformanceMonitoring(['listings', 'all'], data, isLoading);
+  useQueryPerformanceMonitoring(['listings', 'featured'], featuredData, featuredLoading);
+  
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [showFeaturedFirst, setShowFeaturedFirst] = useState(true);
 
   const [filters, setFilters] = useState<AdvancedFilters>({
     searchQuery: '',
@@ -55,10 +61,38 @@ export const ListingsGrid = () => {
   // Debounce search query for better performance
   const debouncedSearchQuery = useDebounce(filters.searchQuery, 300);
   
-  // Flatten all listings from pages
+  // Combine featured and regular listings efficiently
   const allListings = useMemo(() => {
-    return data?.pages.flatMap(page => page.listings) || [];
-  }, [data]);
+    if (!data && !featuredData) return [];
+    
+    const regularListings = data?.pages.flatMap(page => page.listings) || [];
+    const featuredListings = featuredData || [];
+    
+    // Remove duplicates more efficiently
+    if (featuredListings.length === 0) return regularListings;
+    if (regularListings.length === 0) return featuredListings;
+    
+    const regularIds = new Set(regularListings.map(listing => listing.id));
+    const uniqueFeatured = featuredListings.filter(listing => !regularIds.has(listing.id));
+    
+    return [...uniqueFeatured, ...regularListings];
+  }, [data, featuredData]);
+
+  // Optimized stats calculation
+  const listingStats = useMemo(() => {
+    if (!allListings.length) return { cars: 0, properties: 0, total: 0 };
+    
+    let cars = 0;
+    let properties = 0;
+    
+    // Single pass instead of multiple filters
+    for (const listing of allListings) {
+      if (listing.type === 'car') cars++;
+      else if (listing.type === 'property') properties++;
+    }
+    
+    return { cars, properties, total: allListings.length };
+  }, [allListings]);
 
   const handleViewDetails = (listing: Listing) => {
     setSelectedListing(listing);
@@ -70,83 +104,94 @@ export const ListingsGrid = () => {
     setSelectedListing(null);
   };
 
-  // Optimize filtering with better performance and debounced search
+  // Highly optimized filtering with early exits and minimal work
   const filteredListings = useMemo(() => {
     if (!allListings.length) return [];
     
+    // Pre-compile search query for better performance
+    const searchQuery = debouncedSearchQuery?.toLowerCase();
+    const hasLocationFilter = filters.location?.toLowerCase();
+    const hasFilters = filters.type !== 'all' || searchQuery || hasLocationFilter || 
+                       filters.condition.length > 0 || filters.transmission.length > 0 || 
+                       filters.fuelType.length > 0 || filters.propertyType.length > 0 || 
+                       filters.features.length > 0 || filters.bedrooms;
+    
+    // If no filters, return all listings immediately
+    if (!hasFilters && filters.priceMin === 0 && filters.priceMax === 50000000) {
+      return allListings;
+    }
+    
     return allListings.filter((listing) => {
-      // Type filter - early return for better performance
-      if (filters.type !== 'all' && listing.type !== filters.type) {
-        return false;
-      }
+      // Type filter - fastest check first
+      if (filters.type !== 'all' && listing.type !== filters.type) return false;
       
-      // Search query (debounced)
-      if (debouncedSearchQuery) {
-        const query = debouncedSearchQuery.toLowerCase();
-        const matchesSearch = 
-          listing.title.toLowerCase().includes(query) ||
-          listing.location.toLowerCase().includes(query) ||
-          listing.description?.toLowerCase().includes(query);
-        if (!matchesSearch) return false;
-      }
+      // Price filter - numeric comparison is fast
+      if (listing.price < filters.priceMin || listing.price > filters.priceMax) return false;
       
-      // Location filter
-      if (filters.location && !listing.location.toLowerCase().includes(filters.location.toLowerCase())) {
-        return false;
-      }
-      
-      // Price filter
-      if (listing.price < filters.priceMin || listing.price > filters.priceMax) {
-        return false;
-      }
-      
-      // Year filter (for cars) - optimized
-      if (filters.yearMin || filters.yearMax) {
-        const year = listing.specifications?.year;
-        if (year) {
-          if (filters.yearMin && year < filters.yearMin) return false;
-          if (filters.yearMax && year > filters.yearMax) return false;
+      // Search query (debounced) - expensive string operations
+      if (searchQuery) {
+        const titleMatch = listing.title.toLowerCase().includes(searchQuery);
+        if (!titleMatch) {
+          const locationMatch = listing.location.toLowerCase().includes(searchQuery);
+          if (!locationMatch && listing.description) {
+            const descMatch = listing.description.toLowerCase().includes(searchQuery);
+            if (!descMatch) return false;
+          } else if (!locationMatch) {
+            return false;
+          }
         }
       }
       
-      // Array filters - optimized with early returns
-      if (filters.condition.length > 0 && 
-          (!listing.specifications?.condition || !filters.condition.includes(listing.specifications.condition))) {
+      // Location filter
+      if (hasLocationFilter && !listing.location.toLowerCase().includes(hasLocationFilter)) {
         return false;
       }
       
-      if (filters.transmission.length > 0 && 
-          (!listing.specifications?.transmission || !filters.transmission.includes(listing.specifications.transmission))) {
+      // Specification filters - only check if we have specifications
+      const specs = listing.specifications;
+      if (specs) {
+        // Year filter
+        if ((filters.yearMin && specs.year && specs.year < filters.yearMin) ||
+            (filters.yearMax && specs.year && specs.year > filters.yearMax)) return false;
+        
+        // Enum filters - batch check
+        if ((filters.condition.length > 0 && (!specs.condition || !filters.condition.includes(specs.condition))) ||
+            (filters.transmission.length > 0 && (!specs.transmission || !filters.transmission.includes(specs.transmission))) ||
+            (filters.fuelType.length > 0 && (!specs.fuelType || !filters.fuelType.includes(specs.fuelType))) ||
+            (filters.propertyType.length > 0 && (!specs.propertyType || !filters.propertyType.includes(specs.propertyType))) ||
+            (filters.bedrooms && (!specs.bedrooms || specs.bedrooms.toString() !== filters.bedrooms))) {
+          return false;
+        }
+      } else if (filters.condition.length > 0 || filters.transmission.length > 0 || 
+                 filters.fuelType.length > 0 || filters.propertyType.length > 0 || filters.bedrooms) {
         return false;
       }
       
-      if (filters.fuelType.length > 0 && 
-          (!listing.specifications?.fuelType || !filters.fuelType.includes(listing.specifications.fuelType))) {
-        return false;
-      }
-      
-      if (filters.propertyType.length > 0 && 
-          (!listing.specifications?.propertyType || !filters.propertyType.includes(listing.specifications.propertyType))) {
-        return false;
-      }
-      
-      // Bedrooms filter
-      if (filters.bedrooms && 
-          (!listing.specifications?.bedrooms || listing.specifications.bedrooms.toString() !== filters.bedrooms)) {
-        return false;
-      }
-      
-      // Features filter - optimized
-      if (filters.features.length > 0 && !filters.features.every(feature => listing.features.includes(feature))) {
-        return false;
+      // Features filter - most expensive, do last
+      if (filters.features.length > 0) {
+        const features = listing.features || [];
+        if (!filters.features.every(feature => features.includes(feature))) return false;
       }
       
       return true;
     });
   }, [allListings, debouncedSearchQuery, filters]);
 
-  const featuredListings = filteredListings.filter(listing => listing.featured);
-  const regularListings = filteredListings.filter(listing => !listing.featured);
+  // Split listings efficiently in one pass
+  const { featuredListings, regularListings } = useMemo(() => {
+    const featured: Listing[] = [];
+    const regular: Listing[] = [];
+    
+    for (const listing of filteredListings) {
+      if (listing.featured) {
+        featured.push(listing);
+      } else {
+        regular.push(listing);
+      }
+    }
+    
+    return { featuredListings: featured, regularListings: regular };
+  }, [filteredListings]);
 
   const handleSearch = () => {
     // The filtering is already reactive through useMemo
@@ -171,25 +216,15 @@ export const ListingsGrid = () => {
     });
   };
 
-  const LoadingSkeleton = () => (
-    <section id="listings" className="py-16 bg-background">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="space-y-4">
-              <Skeleton className="h-56 w-full" />
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-4 w-1/2" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-          ))}
+  // Show progressive loading - featured first, then regular listings
+  if (featuredLoading && isLoading) {
+    return (
+      <section id="listings" className="py-4 sm:py-6 lg:py-8 bg-gradient-to-br from-gray-50/50 via-white to-blue-50/30 min-h-screen">
+        <div className="container mx-auto px-3 sm:px-4 max-w-7xl">
+          <ListingsSkeleton count={9} showFeatured={true} />
         </div>
-      </div>
-    </section>
-  );
-
-  if (isLoading) {
-    return <LoadingSkeleton />;
+      </section>
+    );
   }
 
   return (
@@ -229,7 +264,7 @@ export const ListingsGrid = () => {
                   }`}
                   onClick={() => setFilters({ ...filters, type: 'all' })}
                 >
-                  All ({allListings.length})
+                  All ({listingStats.total})
                 </Badge>
                 <Badge 
                   className={`cursor-pointer px-3 sm:px-4 py-1.5 sm:py-2 rounded-full transition-all duration-300 transform hover:scale-105 text-xs sm:text-sm ${
@@ -240,7 +275,7 @@ export const ListingsGrid = () => {
                   onClick={() => setFilters({ ...filters, type: 'car' })}
                 >
                   <Car className="h-3 w-3 mr-1" />
-                  Cars ({allListings.filter(l => l.type === 'car').length})
+                  Cars ({listingStats.cars})
                 </Badge>
                 <Badge 
                   className={`cursor-pointer px-3 sm:px-4 py-1.5 sm:py-2 rounded-full transition-all duration-300 transform hover:scale-105 text-xs sm:text-sm ${
@@ -251,7 +286,7 @@ export const ListingsGrid = () => {
                   onClick={() => setFilters({ ...filters, type: 'property' })}
                 >
                   <Home className="h-3 w-3 mr-1" />
-                  Properties ({allListings.filter(l => l.type === 'property').length})
+                  Properties ({listingStats.properties})
                 </Badge>
               </div>
             </div>
@@ -345,27 +380,39 @@ export const ListingsGrid = () => {
               </div>
             )}
 
-            {/* Modern Load More Button - Mobile optimized */}
+            {/* Optimized Load More with Intersection Observer */}
             {hasNextPage && (
               <div className="text-center mt-10 sm:mt-12 lg:mt-16">
-                <Button 
-                  onClick={() => fetchNextPage()}
-                  disabled={isFetchingNextPage}
-                  className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white border-0 px-8 sm:px-10 lg:px-12 py-3 sm:py-4 text-sm sm:text-base lg:text-lg rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none w-full sm:w-auto"
+                <div 
+                  ref={useIntersectionObserver({
+                    threshold: 0.5,
+                    rootMargin: '200px',
+                    onIntersect: () => {
+                      if (!isFetchingNextPage && hasNextPage) {
+                        fetchNextPage();
+                      }
+                    },
+                  })}
                 >
-                  {isFetchingNextPage ? (
-                    <>
-                      <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin mr-2 sm:mr-3" />
-                      <span className="hidden sm:inline">Loading more amazing listings...</span>
-                      <span className="sm:hidden">Loading more...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="hidden sm:inline">Load More Amazing Listings</span>
-                      <span className="sm:hidden">Load More Listings</span>
-                    </>
-                  )}
-                </Button>
+                  <Button 
+                    onClick={() => fetchNextPage()}
+                    disabled={isFetchingNextPage}
+                    className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white border-0 px-8 sm:px-10 lg:px-12 py-3 sm:py-4 text-sm sm:text-base lg:text-lg rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none w-full sm:w-auto"
+                  >
+                    {isFetchingNextPage ? (
+                      <>
+                        <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin mr-2 sm:mr-3" />
+                        <span className="hidden sm:inline">Loading more amazing listings...</span>
+                        <span className="sm:hidden">Loading more...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="hidden sm:inline">Load More Amazing Listings</span>
+                        <span className="sm:hidden">Load More Listings</span>
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
             )}
           </>
