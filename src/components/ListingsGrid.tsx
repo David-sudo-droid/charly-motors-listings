@@ -5,6 +5,7 @@ import AdvancedSearchFilters, { AdvancedFilters } from "./AdvancedSearchFilters"
 import { useListings, useFeaturedListings, type Listing } from "@/hooks/useListings";
 import { usePerformanceMonitoring, useQueryPerformanceMonitoring } from "@/hooks/usePerformanceMonitoring";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
+import { useFavorites } from "@/hooks/useFavorites";
 import { Loader2, Search, Car, Home, Filter, X, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

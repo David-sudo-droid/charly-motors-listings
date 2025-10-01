@@ -83,10 +83,7 @@ export const Header = () => {
             Real Estate
           </a>
 
-          <a href="#research" className="text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors flex items-center gap-1">
-            <Search className="h-4 w-4" />
-            Research
-          </a>
+
           <a href="#about" className="text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors">
             About Us
           </a>

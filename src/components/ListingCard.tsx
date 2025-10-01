@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Car, Home, MessageCircle, Star, Eye, Share2, Scale, Phone, Gauge, Calendar, Fuel, Heart } from "lucide-react";
+import { MapPin, Car, Home, MessageCircle, Star, Eye, Share2, Phone, Gauge, Calendar, Fuel, Heart } from "lucide-react";
 import { Listing } from "@/data/listings";
 import { useState } from "react";
-import { useComparison } from "@/hooks/useComparison";
+import { useFavorites } from "@/hooks/useFavorites";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import OptimizedImage from "@/components/OptimizedImage";
 
@@ -16,7 +16,7 @@ interface ListingCardProps {
 const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const { addToComparison, isInComparison } = useComparison();
+  const { toggleFavorite, isFavorited } = useFavorites();
 
   const formatPrice = (price: number, currency: string) => {
     return new Intl.NumberFormat('en-KE', {
@@ -63,12 +63,9 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
     onViewDetails(listing);
   };
 
-  const handleCompareClick = (e: React.MouseEvent) => {
+  const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    addToComparison({
-      ...listing,
-      specifications: listing.specifications || {}
-    });
+    toggleFavorite(listing.id, listing);
   };
 
   // Add car-specific helper functions
@@ -114,18 +111,18 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
       {/* Car site style action buttons - Mobile always visible */}
       <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-20 flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
         <button
-          onClick={handleCompareClick}
-          className={`w-7 h-7 sm:w-8 sm:h-8 bg-white border border-gray-300 rounded-md flex items-center justify-center transition-colors duration-200 hover:bg-blue-50 ${isInComparison(listing.id) ? 'bg-blue-50 border-blue-300 text-blue-600' : 'text-gray-600'}`}
-          title="Compare"
+          onClick={handleFavoriteClick}
+          className={`w-7 h-7 sm:w-8 sm:h-8 bg-white border border-gray-300 rounded-md flex items-center justify-center transition-colors duration-200 ${isFavorited(listing.id) ? 'bg-red-50 border-red-300 text-red-600 hover:bg-red-100' : 'text-gray-600 hover:bg-gray-50'}`}
+          title={isFavorited(listing.id) ? "Remove from favorites" : "Add to favorites"}
         >
-          <Scale className="w-3 h-3 sm:w-4 sm:h-4" />
+          <Heart className={`w-3 h-3 sm:w-4 sm:h-4 ${isFavorited(listing.id) ? 'fill-current' : ''}`} />
         </button>
         <button
           onClick={handleShareClick}
           className="w-7 h-7 sm:w-8 sm:h-8 bg-white border border-gray-300 rounded-md flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors duration-200"
-          title="Save"
+          title="Share"
         >
-          <Heart className="w-3 h-3 sm:w-4 sm:h-4" />
+          <Share2 className="w-3 h-3 sm:w-4 sm:h-4" />
         </button>
       </div>
       
