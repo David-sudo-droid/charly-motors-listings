@@ -4,7 +4,6 @@ import ListingModal from "./ListingModal";
 import SimpleSearchFilters, { SimpleFilters } from "./SimpleSearchFilters";
 import { useListings, useFeaturedListings, type Listing } from "@/hooks/useListings";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
-import { useFavorites } from "@/hooks/useFavorites";
 import { Loader2, Search, Car, Home, Filter, X, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

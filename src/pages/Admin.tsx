@@ -74,7 +74,10 @@ const Admin = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setListings(data || []);
+      setListings((data || []).map(item => ({
+        ...item,
+        type: item.type as 'car' | 'property'
+      })));
     } catch (error) {
       console.error('Error fetching listings:', error);
       toast({

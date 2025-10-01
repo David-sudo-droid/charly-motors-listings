@@ -16,8 +16,8 @@ export interface Listing {
   featured: boolean;
 }
 
-const LISTINGS_PER_PAGE = 20; // Larger pages, fewer requests
-const CACHE_TIME = 30 * 60 * 1000; // 30 minutes cache - more aggressive
+const LISTINGS_PER_PAGE = 9; // Smaller initial load for faster first paint
+const CACHE_TIME = 30 * 60 * 1000; // 30 minutes cache
 const STALE_TIME = 10 * 60 * 1000; // 10 minutes stale time
 
 const transformListing = (item: any): Listing => ({

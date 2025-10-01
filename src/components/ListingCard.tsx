@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Car, Home, MessageCircle, Star, Eye, Phone, Gauge, Calendar, Fuel, Heart } from "lucide-react";
 import { Listing } from "@/data/listings";
 import { useState } from "react";
-import { useFavorites } from "@/hooks/useFavorites";
 
 import OptimizedImage from "@/components/OptimizedImage";
 
@@ -16,7 +15,6 @@ interface ListingCardProps {
 const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const { toggleFavorite, isFavorited } = useFavorites();
 
   const formatPrice = (price: number, currency: string) => {
     return new Intl.NumberFormat('en-KE', {
@@ -43,7 +41,7 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    toggleFavorite(listing.id, listing);
+    // Favorites functionality removed for performance optimization
   };
 
   // Add car-specific helper functions
@@ -90,10 +88,10 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
       <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-20 flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
         <button
           onClick={handleFavoriteClick}
-          className={`w-7 h-7 sm:w-8 sm:h-8 bg-white border border-gray-300 rounded-md flex items-center justify-center transition-colors duration-200 ${isFavorited(listing.id) ? 'bg-red-50 border-red-300 text-red-600 hover:bg-red-100' : 'text-gray-600 hover:bg-gray-50'}`}
-          title={isFavorited(listing.id) ? "Remove from favorites" : "Add to favorites"}
+          className="w-7 h-7 sm:w-8 sm:h-8 bg-white border border-gray-300 rounded-md flex items-center justify-center transition-colors duration-200 text-gray-600 hover:bg-gray-50"
+          title="Add to favorites"
         >
-          <Heart className={`w-3 h-3 sm:w-4 sm:h-4 ${isFavorited(listing.id) ? 'fill-current' : ''}`} />
+          <Heart className="w-3 h-3 sm:w-4 sm:h-4" />
         </button>
 
       </div>

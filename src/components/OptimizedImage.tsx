@@ -65,10 +65,10 @@ const OptimizedImage = ({
     
     // Extract base URL and add aggressive optimization parameters
     const baseUrl = url.split('?')[0];
-    // Use smaller dimensions for better loading speed
-    const optWidth = Math.min(width, 600); // Max 600px width
-    const optHeight = Math.min(height, 400); // Max 400px height
-    return `${baseUrl}?w=${optWidth}&h=${optHeight}&fit=crop&q=${quality}&auto=format&fm=webp`;
+    // Use smaller dimensions for faster loading - even more aggressive
+    const optWidth = Math.min(width, 400); // Max 400px width
+    const optHeight = Math.min(height, 300); // Max 300px height
+    return `${baseUrl}?w=${optWidth}&h=${optHeight}&fit=crop&q=${quality}&auto=format&fm=webp&dpr=1`;
   };
 
   const handleLoad = () => {

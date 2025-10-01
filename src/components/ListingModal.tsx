@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { MapPin, MessageCircle, X, Car, Home, Heart, Share2 } from "lucide-react";
 import { Listing } from "@/data/listings";
-import { useFavorites } from "@/hooks/useFavorites";
 import OptimizedImage from "@/components/OptimizedImage";
 
 interface ListingModalProps {
@@ -14,7 +13,6 @@ interface ListingModalProps {
 }
 
 const ListingModal = ({ listing, isOpen, onClose }: ListingModalProps) => {
-  const { toggleFavorite, isFavorited } = useFavorites();
   
   if (!listing) return null;
 
@@ -33,7 +31,7 @@ const ListingModal = ({ listing, isOpen, onClose }: ListingModalProps) => {
   };
 
   const handleFavoriteClick = () => {
-    toggleFavorite(listing.id, listing);
+    // Favorites functionality removed for performance optimization
   };
 
   const handleShareClick = async () => {
@@ -89,15 +87,11 @@ const ListingModal = ({ listing, isOpen, onClose }: ListingModalProps) => {
             <Button
               variant="outline"
               onClick={handleFavoriteClick}
-              className={`flex items-center gap-2 text-xs sm:text-sm px-3 py-2 ${
-                isFavorited(listing.id) 
-                  ? 'bg-red-50 border-red-300 text-red-600 hover:bg-red-100' 
-                  : 'hover:bg-gray-50'
-              }`}
+              className="flex items-center gap-2 text-xs sm:text-sm px-3 py-2 hover:bg-gray-50"
             >
-              <Heart className={`h-3 w-3 sm:h-4 sm:w-4 ${isFavorited(listing.id) ? 'fill-current' : ''}`} />
-              <span className="hidden sm:inline">{isFavorited(listing.id) ? 'Remove from Favorites' : 'Add to Favorites'}</span>
-              <span className="sm:hidden">{isFavorited(listing.id) ? 'Remove' : 'Favorite'}</span>
+              <Heart className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Add to Favorites</span>
+              <span className="sm:hidden">Favorite</span>
             </Button>
           </div>
 
