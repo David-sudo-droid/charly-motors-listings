@@ -157,6 +157,17 @@ export const ListingsGrid = () => {
     });
   };
 
+  // Call useIntersectionObserver at top level (not conditionally)
+  const loadMoreRef = useIntersectionObserver({
+    threshold: 0.5,
+    rootMargin: '200px',
+    onIntersect: () => {
+      if (!isFetchingNextPage && hasNextPage) {
+        fetchNextPage();
+      }
+    },
+  });
+
   // Show progressive loading - featured first, then regular listings
   if (featuredLoading && isLoading) {
     return (
@@ -322,17 +333,7 @@ export const ListingsGrid = () => {
             {/* Optimized Load More with Intersection Observer */}
             {hasNextPage && (
               <div className="text-center mt-10 sm:mt-12 lg:mt-16">
-                <div 
-                  ref={useIntersectionObserver({
-                    threshold: 0.5,
-                    rootMargin: '200px',
-                    onIntersect: () => {
-                      if (!isFetchingNextPage && hasNextPage) {
-                        fetchNextPage();
-                      }
-                    },
-                  })}
-                >
+                <div ref={loadMoreRef}>
                   <Button 
                     onClick={() => fetchNextPage()}
                     disabled={isFetchingNextPage}
