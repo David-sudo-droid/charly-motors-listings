@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Car, Home, Menu, X, LogIn, LogOut, User, Settings, Heart, Search, MapPin, Award } from "lucide-react";
+import { Car, Home, Menu, X, LogIn, LogOut, User, Settings, Search, MapPin, Award, MessageCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
@@ -28,6 +28,13 @@ export const Header = () => {
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
+  };
+
+  const handleSellThroughUs = () => {
+    const phoneNumber = "254712345678"; // Replace with founder's actual WhatsApp number
+    const message = "Hi! I'm interested in selling my car/property through Charly Motors. Can you help me with the process?";
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
   };
 
   return (
@@ -99,12 +106,6 @@ export const Header = () => {
         <div className="hidden lg:flex items-center space-x-3">
           {user ? (
             <>
-              <Link to="/favorites">
-                <Button variant="ghost" size="sm" className="text-gray-700 hover:text-blue-600">
-                  <Heart className="h-4 w-4 mr-1" />
-                  <span className="hidden xl:inline">Saved Cars</span>
-                </Button>
-              </Link>
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -114,9 +115,14 @@ export const Header = () => {
                 <LogOut className="h-4 w-4 mr-1" />
                 <span className="hidden xl:inline">Sign Out</span>
               </Button>
-              <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white">
-                <span className="hidden xl:inline">List Your Car</span>
-                <span className="xl:hidden">List Car</span>
+              <Button 
+                size="sm" 
+                className="bg-green-600 hover:bg-green-700 text-white"
+                onClick={handleSellThroughUs}
+              >
+                <MessageCircle className="h-4 w-4 mr-1" />
+                <span className="hidden xl:inline">Sell Through Us</span>
+                <span className="xl:hidden">Sell</span>
               </Button>
             </>
           ) : (
@@ -127,9 +133,14 @@ export const Header = () => {
                   <span className="hidden xl:inline">Sign In</span>
                 </Button>
               </Link>
-              <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white font-semibold">
-                <span className="hidden xl:inline">List Your Car</span>
-                <span className="xl:hidden">List Car</span>
+              <Button 
+                size="sm" 
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold"
+                onClick={handleSellThroughUs}
+              >
+                <MessageCircle className="h-4 w-4 mr-1" />
+                <span className="hidden xl:inline">Sell Through Us</span>
+                <span className="xl:hidden">Sell</span>
               </Button>
             </>
           )}
@@ -174,12 +185,6 @@ export const Header = () => {
                     Welcome, {user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'}
                     {isAdmin && <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">Admin</span>}
                   </div>
-                  <Link to="/favorites" onClick={() => setIsMenuOpen(false)}>
-                    <Button variant="ghost" className="w-full justify-start text-base py-3">
-                      <Heart className="h-5 w-5 mr-3" />
-                      Saved Cars
-                    </Button>
-                  </Link>
                   {isAdmin && (
                     <Link to="/admin" onClick={() => setIsMenuOpen(false)}>
                       <Button variant="ghost" className="w-full justify-start text-base py-3">
@@ -192,6 +197,13 @@ export const Header = () => {
                     <LogOut className="h-5 w-5 mr-3" />
                     Sign Out
                   </Button>
+                  <Button 
+                    className="w-full bg-green-600 hover:bg-green-700 text-white text-base py-3" 
+                    onClick={() => { handleSellThroughUs(); setIsMenuOpen(false); }}
+                  >
+                    <MessageCircle className="h-5 w-5 mr-3" />
+                    Sell Through Us
+                  </Button>
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -201,8 +213,12 @@ export const Header = () => {
                       Sign In
                     </Button>
                   </Link>
-                  <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white text-base py-3">
-                    List Your Car
+                  <Button 
+                    className="w-full bg-green-600 hover:bg-green-700 text-white text-base py-3"
+                    onClick={() => { handleSellThroughUs(); setIsMenuOpen(false); }}
+                  >
+                    <MessageCircle className="h-5 w-5 mr-3" />
+                    Sell Through Us
                   </Button>
                 </div>
               )}
