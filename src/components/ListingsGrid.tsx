@@ -193,23 +193,11 @@ export const ListingsGrid = () => {
   }
 
   return (
-    <section id="listings" className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-gray-50/50 via-white to-blue-50/30 min-h-screen">
+    <section id="listings" className="py-4 sm:py-6 lg:py-8 bg-gradient-to-br from-gray-50/50 via-white to-blue-50/30 min-h-screen">
       <div className="container mx-auto px-3 sm:px-4 max-w-7xl">
-        {/* Modern Header - Mobile optimized */}
-        <div className="text-center mb-8 sm:mb-12 lg:mb-16 animate-fade-in">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent leading-tight">
-            Premium <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Listings</span>
-          </h2>
-          <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
-            Discover exceptional vehicles and properties with unmatched quality and competitive prices
-          </p>
-          <div className="mt-4 sm:mt-6 lg:mt-8 flex justify-center">
-            <div className="h-1 w-16 sm:w-20 lg:w-24 bg-gradient-to-r from-primary to-accent rounded-full"></div>
-          </div>
-        </div>
 
-        {/* Modern Search Filters - Mobile optimized */}
-        <div className="mb-8 sm:mb-10 lg:mb-12">
+        {/* Search Filters */}
+        <div className="mb-4 sm:mb-6">
           {!showFilters ? (
             <div className="flex flex-col gap-4 sm:gap-6 p-4 sm:p-6 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/30 animate-slide-up">
               <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-stretch sm:items-center">
@@ -290,9 +278,9 @@ export const ListingsGrid = () => {
         </div>
 
         {/* Results Summary - Mobile optimized */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3 sm:mb-4">
           <p className="text-sm sm:text-base text-muted-foreground">
-            Showing {filteredListings.length} of {allListings.length} listings
+            {filteredListings.length} of {allListings.length} listings
           </p>
           {(filters.searchQuery || filters.location || filters.condition.length > 0 || 
             filters.transmission.length > 0 || filters.fuelType.length > 0 || 
@@ -314,16 +302,14 @@ export const ListingsGrid = () => {
           </div>
         ) : (
           <>
-            {/* Modern Featured Listings Section - Mobile optimized */}
+            {/* Featured Listings */}
             {featuredListings.length > 0 && (
-              <div className="mb-10 sm:mb-12 lg:mb-16">
-                <div className="flex items-center justify-center gap-2 sm:gap-4 mb-6 sm:mb-8 lg:mb-10">
-                  <div className="hidden sm:block h-px w-8 sm:w-12 lg:w-16 bg-gradient-to-r from-transparent to-primary"></div>
-                  <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent text-center">
-                    Featured Listings
+              <div className="mb-6 sm:mb-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-800">
+                    Featured
                   </h3>
-                  <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-lg animate-bounce-subtle px-2 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm">Premium</Badge>
-                  <div className="hidden sm:block h-px w-8 sm:w-12 lg:w-16 bg-gradient-to-l from-transparent to-accent"></div>
+                  <Badge className="bg-yellow-500 text-white px-2 py-0.5 text-xs">Premium</Badge>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                   {featuredListings.map((listing) => (
@@ -337,16 +323,16 @@ export const ListingsGrid = () => {
               </div>
             )}
 
-            {/* Modern Regular Listings - Mobile optimized */}
+            {/* Regular Listings */}
             {regularListings.length > 0 && (
               <div>
-                <div className="flex items-center justify-center gap-2 sm:gap-4 mb-6 sm:mb-8 lg:mb-10">
-                  <div className="hidden sm:block h-px w-12 sm:w-16 lg:w-20 bg-gradient-to-r from-transparent to-gray-300"></div>
-                  <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-700 text-center px-2">
-                    {featuredListings.length > 0 ? "All Listings" : "Our Premium Collection"}
-                  </h3>
-                  <div className="hidden sm:block h-px w-12 sm:w-16 lg:w-20 bg-gradient-to-l from-transparent to-gray-300"></div>
-                </div>
+                {featuredListings.length > 0 && (
+                  <div className="mb-4">
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-800">
+                      All Listings
+                    </h3>
+                  </div>
+                )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                   {regularListings.map((listing) => (
                     <ListingCard

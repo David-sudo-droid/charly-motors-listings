@@ -22,22 +22,18 @@ const Index = () => {
       <Header />
       <Hero />
       
-      {/* Cars Section */}
-      <section id="cars" className="py-16">
-        <div className="container mx-auto px-4">
-          <ListingsGrid />
-        </div>
-      </section>
+      {/* Cars Section - Direct integration */}
+      <ListingsGrid />
       
       {/* Financing Section */}
-      <section id="financing" className="py-20 bg-gray-50">
+      <section id="financing" className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Car Financing Made Easy
+          <div className="text-center mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
+              Car Financing
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Calculate your monthly payments and get pre-approved for financing with competitive rates from trusted lenders.
+            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+              Calculate your monthly payments and get financing with competitive rates.
             </p>
           </div>
           <FinancingCalculator />
@@ -45,78 +41,52 @@ const Index = () => {
       </section>
 
       {/* Properties Section */}
-      <section id="properties" className="py-16 bg-muted/50">
+      <section id="properties" className="py-8 bg-muted/50">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Premium Properties</h2>
-          <p className="text-center text-muted-foreground mb-8">
-            Discover exclusive real estate opportunities in prime locations across Kenya
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-4">Premium Properties</h2>
+          <p className="text-center text-muted-foreground mb-6">
+            Real estate opportunities in prime locations across Kenya
           </p>
-          {/* Properties will be filtered from ListingsGrid */}
         </div>
       </section>
 
-      {/* About Section */}
-      <section id="about" className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-8">About Charly Motors & Properties</h2>
-            <p className="text-lg text-muted-foreground mb-6">
-              With over a decade of experience in the automotive and real estate industry, 
-              Charly Motors & Properties has established itself as Kenya's premier destination 
-              for quality vehicles and exceptional properties.
-            </p>
-            <p className="text-muted-foreground mb-8">
-              We pride ourselves on transparency, reliability, and providing our clients 
-              with the best deals in the market. Whether you're looking for your dream car 
-              or the perfect property, we're here to make it happen.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">500+</div>
-                <p className="text-muted-foreground">Vehicles Sold</p>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">200+</div>
-                <p className="text-muted-foreground">Properties Managed</p>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">1000+</div>
-                <p className="text-muted-foreground">Happy Clients</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
       
       {/* Footer */}
-      <footer className="bg-primary text-primary-foreground py-12">
+      <footer className="bg-primary text-primary-foreground py-8">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div>
-              <h3 className="text-lg font-bold mb-4">Charly Motors & Properties</h3>
+              <h3 className="text-lg font-bold mb-3">Charly Motors</h3>
               <p className="text-sm opacity-90">
-                Your trusted partner for quality vehicles and properties in Kenya.
+                Quality vehicles and properties in Kenya with over 10 years of experience.
               </p>
             </div>
             <div>
               <h4 className="font-semibold mb-3">Quick Links</h4>
-              <ul className="space-y-2 text-sm opacity-90">
-                <li><a href="#cars" className="hover:text-accent transition-smooth">Cars</a></li>
+              <ul className="space-y-1 text-sm opacity-90">
+                <li><a href="#listings" className="hover:text-accent transition-smooth">Cars</a></li>
                 <li><a href="#properties" className="hover:text-accent transition-smooth">Properties</a></li>
-                <li><a href="#about" className="hover:text-accent transition-smooth">About Us</a></li>
-                <li><a href="#contact" className="hover:text-accent transition-smooth">Contact</a></li>
+                <li><a href="#financing" className="hover:text-accent transition-smooth">Financing</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-3">Contact Info</h4>
-              <ul className="space-y-2 text-sm opacity-90">
+              <h4 className="font-semibold mb-3">Contact</h4>
+              <ul className="space-y-1 text-sm opacity-90">
                 <li>📱 +254 712 345 678</li>
                 <li>📧 info@charlymotors.co.ke</li>
                 <li>📍 Nairobi, Kenya</li>
               </ul>
             </div>
+            <div>
+              <h4 className="font-semibold mb-3">Stats</h4>
+              <ul className="space-y-1 text-sm opacity-90">
+                <li>500+ Cars Sold</li>
+                <li>200+ Properties</li>
+                <li>1000+ Happy Clients</li>
+              </ul>
+            </div>
           </div>
-          <div className="border-t border-primary-foreground/20 mt-8 pt-8 text-center text-sm opacity-75">
+          <div className="border-t border-primary-foreground/20 mt-6 pt-6 text-center text-sm opacity-75">
             <p>&copy; 2024 Charly Motors & Properties. All rights reserved.</p>
           </div>
         </div>
