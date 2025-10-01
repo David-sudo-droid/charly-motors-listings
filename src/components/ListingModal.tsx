@@ -2,9 +2,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { MapPin, MessageCircle, X, Car, Home } from "lucide-react";
+import { MapPin, MessageCircle, X, Car, Home, Heart, Share2 } from "lucide-react";
 import { Listing } from "@/data/listings";
-
+import { useFavorites } from "@/hooks/useFavorites";
 import OptimizedImage from "@/components/OptimizedImage";
 
 interface ListingModalProps {
@@ -14,6 +14,8 @@ interface ListingModalProps {
 }
 
 const ListingModal = ({ listing, isOpen, onClose }: ListingModalProps) => {
+  const { toggleFavorite, isFavorited } = useFavorites();
+  
   if (!listing) return null;
 
   const formatPrice = (price: number, currency: string) => {
@@ -28,6 +30,31 @@ const ListingModal = ({ listing, isOpen, onClose }: ListingModalProps) => {
     const message = `Hi! I'm interested in the ${listing.title} listed for ${formatPrice(listing.price, listing.currency)}. Could you provide more information?`;
     const whatsappUrl = `https://wa.me/${listing.whatsappNumber.replace('+', '')}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
+  };
+
+  const handleFavoriteClick = () => {
+    toggleFavorite(listing.id, listing);
+  };
+
+  const handleShareClick = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: listing.title,
+          text: `Check out this ${listing.type}: ${listing.title} for ${formatPrice(listing.price, listing.currency)}`,
+          url: window.location.href,
+        });
+      } catch (error) {
+        console.log('Share cancelled');
+      }
+    } else {
+      // Fallback to clipboard
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+      } catch (error) {
+        console.error('Failed to copy to clipboard:', error);
+      }
+    }
   };
 
   return (
@@ -59,47 +86,45 @@ const ListingModal = ({ listing, isOpen, onClose }: ListingModalProps) => {
         </DialogHeader>
 
         <div className="p-8 pt-4 space-y-8">
-          {/* Modern Image Carousel */}
-          <div className="relative">
-            {listing.images && listing.images.length > 0 ? (
-              <Carousel className="w-full rounded-2xl overflow-hidden shadow-2xl">
-                <CarouselContent>
-                  {listing.images.map((image, index) => (
-                    <CarouselItem key={index}>
-                      <div className="relative h-72 md:h-[28rem] lg:h-[32rem] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
-                        <OptimizedImage
-                          src={image}
-                          alt={`${listing.title} - Image ${index + 1}`}
-                          className=""
-                          width={1200}
-                          height={512}
-                          listingType={listing.type}
-                          priority={index === 0} // Prioritize first image
-                          quality={95} // Highest quality for modal
-                        />
-                        {/* Image overlay gradient */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none"></div>
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                {listing.images.length > 1 && (
-                  <>
-                    <CarouselPrevious className="left-6 h-12 w-12 bg-white/90 backdrop-blur-md hover:bg-white shadow-lg border border-white/30" />
-                    <CarouselNext className="right-6 h-12 w-12 bg-white/90 backdrop-blur-md hover:bg-white shadow-lg border border-white/30" />
-                  </>
-                )}
-              </Carousel>
-            ) : (
-              <div className="relative h-64 md:h-96 bg-muted rounded-lg overflow-hidden flex items-center justify-center">
-                {listing.type === 'car' ? (
-                  <Car className="h-20 w-20 text-muted-foreground" />
-                ) : (
-                  <Home className="h-20 w-20 text-muted-foreground" />
-                )}
-              </div>
-            )}
+          {/* Action buttons */}
+          <div className="flex gap-3 justify-center">
+            <Button
+              variant="outline"
+              onClick={handleFavoriteClick}
+              className={`flex items-center gap-2 ${
+                isFavorited(listing.id) 
+                  ? 'bg-red-50 border-red-300 text-red-600 hover:bg-red-100' 
+                  : 'hover:bg-gray-50'
+              }`}
+            >
+              <Heart className={`h-4 w-4 ${isFavorited(listing.id) ? 'fill-current' : ''}`} />
+              {isFavorited(listing.id) ? 'Remove from Favorites' : 'Add to Favorites'}
+            </Button>
+            <Button variant="outline" onClick={handleShareClick} className="flex items-center gap-2">
+              <Share2 className="h-4 w-4" />
+              Share
+            </Button>
           </div>
+
+          {/* Main Image */}
+          {listing.images && listing.images.length > 0 && (
+            <div className="mb-6">
+              <OptimizedImage
+                src={listing.images[0]}
+                alt={`${listing.title}`}
+                className="w-full h-64 sm:h-80 lg:h-96 object-cover rounded-lg"
+                width={800}
+                height={600}
+                priority={true}
+                listingType={listing.type}
+              />
+              {listing.images.length > 1 && (
+                <p className="text-sm text-gray-500 mt-2 text-center">
+                  1 of {listing.images.length} photos available
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Modern Description */}
           <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/30 shadow-lg">

@@ -105,9 +105,14 @@ export const Header = () => {
                   <span className="hidden xl:inline">Saved Cars</span>
                 </Button>
               </Link>
-              <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:border-blue-600 hover:text-blue-600">
-                <User className="h-4 w-4 mr-1" />
-                <span className="hidden xl:inline">My Account</span>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-gray-300 text-gray-700 hover:border-red-600 hover:text-red-600"
+                onClick={handleSignOut}
+              >
+                <LogOut className="h-4 w-4 mr-1" />
+                <span className="hidden xl:inline">Sign Out</span>
               </Button>
               <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white">
                 <span className="hidden xl:inline">List Your Car</span>
