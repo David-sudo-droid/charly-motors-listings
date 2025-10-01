@@ -59,43 +59,43 @@ const ListingModal = ({ listing, isOpen, onClose }: ListingModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl w-full max-h-[95vh] overflow-y-auto bg-white border border-gray-200 shadow-xl rounded-lg p-0 m-4">
-        <DialogHeader className="p-4 sm:p-6 pb-0">
-          <div className="flex flex-col items-start gap-4">
-            <DialogTitle className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight">
+      <DialogContent className="max-w-4xl w-[95vw] max-h-[95vh] overflow-y-auto bg-white border border-gray-200 shadow-xl rounded-lg p-0 mx-auto my-4">
+        <DialogHeader className="p-3 sm:p-4 lg:p-6 pb-0">
+          <div className="flex flex-col items-start gap-3 sm:gap-4">
+            <DialogTitle className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 leading-tight pr-2">
               {listing.title}
             </DialogTitle>
             <div className="flex items-center text-gray-600 mb-2">
-              <MapPin className="h-4 w-4 mr-2 text-blue-600" />
-              <span className="text-sm sm:text-base">{listing.location}</span>
+              <MapPin className="h-4 w-4 mr-2 text-blue-600 flex-shrink-0" />
+              <span className="text-sm sm:text-base truncate">{listing.location}</span>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full gap-2">
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-600">
+              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600">
                 {formatPrice(listing.price, listing.currency)}
               </div>
               {listing.featured && (
-                <Badge className="bg-yellow-500 text-white shadow-sm px-3 py-1 text-sm w-fit">
+                <Badge className="bg-yellow-500 text-white shadow-sm px-3 py-1 text-xs sm:text-sm w-fit">
                   ⭐ Featured
                 </Badge>
               )}
             </div>
           </div>
-          <div className="mt-4 h-px bg-gray-200"></div>
+          <div className="mt-3 sm:mt-4 h-px bg-gray-200"></div>
         </DialogHeader>
 
-        <div className="p-4 sm:p-6 pt-2 space-y-4 sm:space-y-6">
+        <div className="p-3 sm:p-4 lg:p-6 pt-2 space-y-3 sm:space-y-4 lg:space-y-6 overflow-hidden">
           {/* Action buttons */}
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <Button
               variant="outline"
               onClick={handleFavoriteClick}
-              className={`flex items-center gap-2 text-sm ${
+              className={`flex items-center gap-2 text-xs sm:text-sm px-3 py-2 ${
                 isFavorited(listing.id) 
                   ? 'bg-red-50 border-red-300 text-red-600 hover:bg-red-100' 
                   : 'hover:bg-gray-50'
               }`}
             >
-              <Heart className={`h-4 w-4 ${isFavorited(listing.id) ? 'fill-current' : ''}`} />
+              <Heart className={`h-3 w-3 sm:h-4 sm:w-4 ${isFavorited(listing.id) ? 'fill-current' : ''}`} />
               <span className="hidden sm:inline">{isFavorited(listing.id) ? 'Remove from Favorites' : 'Add to Favorites'}</span>
               <span className="sm:hidden">{isFavorited(listing.id) ? 'Remove' : 'Favorite'}</span>
             </Button>
@@ -103,11 +103,11 @@ const ListingModal = ({ listing, isOpen, onClose }: ListingModalProps) => {
 
           {/* Main Image */}
           {listing.images && listing.images.length > 0 && (
-            <div className="mb-4 sm:mb-6">
+            <div className="mb-3 sm:mb-4 lg:mb-6 overflow-hidden">
               <OptimizedImage
                 src={listing.images[0]}
                 alt={`${listing.title}`}
-                className="w-full h-48 sm:h-64 lg:h-80 object-cover rounded-lg"
+                className="w-full h-40 sm:h-48 lg:h-64 object-cover rounded-lg"
                 width={800}
                 height={600}
                 priority={true}
@@ -122,21 +122,21 @@ const ListingModal = ({ listing, isOpen, onClose }: ListingModalProps) => {
           )}
 
           {/* Description */}
-          <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
-            <h3 className="text-lg sm:text-xl font-bold mb-3 text-gray-900">Description</h3>
-            <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
+          <div className="bg-gray-50 rounded-lg p-3 sm:p-4 lg:p-6">
+            <h3 className="text-base sm:text-lg lg:text-xl font-bold mb-2 sm:mb-3 text-gray-900">Description</h3>
+            <p className="text-gray-700 leading-relaxed text-sm sm:text-base break-words">
               {listing.description}
             </p>
           </div>
 
           {/* Features */}
-          <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
-            <h3 className="text-lg sm:text-xl font-bold mb-3 text-gray-900">Features</h3>
-            <div className="flex flex-wrap gap-2">
+          <div className="bg-gray-50 rounded-lg p-3 sm:p-4 lg:p-6">
+            <h3 className="text-base sm:text-lg lg:text-xl font-bold mb-2 sm:mb-3 text-gray-900">Features</h3>
+            <div className="flex flex-wrap gap-1 sm:gap-2">
               {listing.features.map((feature, index) => (
                 <Badge 
                   key={index} 
-                  className="bg-blue-100 text-blue-800 border-blue-200 px-3 py-1 text-xs sm:text-sm"
+                  className="bg-blue-100 text-blue-800 border-blue-200 px-2 sm:px-3 py-1 text-xs sm:text-sm break-all"
                 >
                   {feature}
                 </Badge>
@@ -174,8 +174,8 @@ const ListingModal = ({ listing, isOpen, onClose }: ListingModalProps) => {
                 className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 text-sm sm:text-base font-medium w-full sm:w-auto"
                 onClick={handleWhatsAppClick}
               >
-                <MessageCircle className="h-6 w-6 mr-3" />
-                💬 Chat with us on WhatsApp
+                <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                Contact on WhatsApp
               </Button>
               <p className="text-sm text-gray-500 mt-4">
                 Usually responds within minutes • Available 24/7

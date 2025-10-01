@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Fix modal overflow on mobile */
+[data-radix-dialog-content] {
+  max-width: 95vw !important;
+  width: 100% !important;
+  margin: 1rem auto !important;
+  box-sizing: border-box !important;
+}
+
+/* Ensure no horizontal overflow */
+[data-radix-dialog-content] * {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
 /* Charly Motors & Properties Design System
 All colors MUST be HSL. Professional automotive & real estate branding.
 */
