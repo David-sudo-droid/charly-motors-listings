@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Car, Home, MessageCircle, Star, Eye, Share2, Phone, Gauge, Calendar, Fuel, Heart } from "lucide-react";
+import { MapPin, Car, Home, MessageCircle, Star, Eye, Phone, Gauge, Calendar, Fuel, Heart } from "lucide-react";
 import { Listing } from "@/data/listings";
 import { useState } from "react";
 import { useFavorites } from "@/hooks/useFavorites";
@@ -34,29 +34,7 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
     window.open(whatsappUrl, '_blank');
   };
 
-  const handleShareClick = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: listing.title,
-          text: `Check out this ${listing.type}: ${listing.title} for ${formatPrice(listing.price, listing.currency)}`,
-          url: window.location.href,
-        });
-      } catch (error) {
-        // Fallback to clipboard
-        await navigator.clipboard.writeText(window.location.href);
-      }
-    } else {
-      // Fallback to clipboard
-      try {
-        await navigator.clipboard.writeText(window.location.href);
-      } catch (error) {
-        console.error('Failed to copy to clipboard:', error);
-      }
-    }
-  };
+
 
   const handleViewDetails = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -117,13 +95,7 @@ const ListingCard = ({ listing, onViewDetails }: ListingCardProps) => {
         >
           <Heart className={`w-3 h-3 sm:w-4 sm:h-4 ${isFavorited(listing.id) ? 'fill-current' : ''}`} />
         </button>
-        <button
-          onClick={handleShareClick}
-          className="w-7 h-7 sm:w-8 sm:h-8 bg-white border border-gray-300 rounded-md flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors duration-200"
-          title="Share"
-        >
-          <Share2 className="w-3 h-3 sm:w-4 sm:h-4" />
-        </button>
+
       </div>
       
       {/* Professional image section like car sites - Mobile responsive */}

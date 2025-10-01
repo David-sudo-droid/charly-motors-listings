@@ -68,7 +68,7 @@ export const Header = () => {
             <p className="text-xs md:text-sm text-gray-600 -mt-1 font-medium">Cars & Properties</p>
           </div>
           <div className="sm:hidden">
-            <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Charly</h1>
+            <h1 className="text-base font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Charly Motors</h1>
           </div>
         </Link>
 
@@ -80,7 +80,7 @@ export const Header = () => {
           </a>
           <a href="#properties" className="text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors flex items-center gap-1">
             <Home className="h-4 w-4" />
-            Real Estate
+            Properties
           </a>
 
 
@@ -159,7 +159,7 @@ export const Header = () => {
             </a>
             <a href="#properties" onClick={() => setIsMenuOpen(false)} className="flex items-center px-3 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors">
               <Home className="h-5 w-5 mr-3" />
-              Real Estate
+              Properties
             </a>
 
             <a href="#about" onClick={() => setIsMenuOpen(false)} className="flex items-center px-3 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors">

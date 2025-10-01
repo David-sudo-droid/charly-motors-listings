@@ -59,89 +59,84 @@ const ListingModal = ({ listing, isOpen, onClose }: ListingModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-md border border-white/30 shadow-2xl rounded-3xl p-0">
-        <DialogHeader className="p-8 pb-0">
-          <div className="flex flex-col lg:flex-row items-start justify-between gap-6">
-            <div className="flex-1">
-              <DialogTitle className="text-3xl lg:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent leading-tight">
-                {listing.title}
-              </DialogTitle>
-              <div className="flex items-center text-gray-600 mb-2">
-                <MapPin className="h-5 w-5 mr-2 text-primary" />
-                <span className="text-lg">{listing.location}</span>
-              </div>
+      <DialogContent className="max-w-4xl w-full max-h-[95vh] overflow-y-auto bg-white border border-gray-200 shadow-xl rounded-lg p-0 m-4">
+        <DialogHeader className="p-4 sm:p-6 pb-0">
+          <div className="flex flex-col items-start gap-4">
+            <DialogTitle className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight">
+              {listing.title}
+            </DialogTitle>
+            <div className="flex items-center text-gray-600 mb-2">
+              <MapPin className="h-4 w-4 mr-2 text-blue-600" />
+              <span className="text-sm sm:text-base">{listing.location}</span>
             </div>
-            <div className="text-right">
-              <div className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-2">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full gap-2">
+              <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-600">
                 {formatPrice(listing.price, listing.currency)}
               </div>
               {listing.featured && (
-                <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-lg px-4 py-2 animate-bounce-subtle">
-                  ⭐ Featured Premium
+                <Badge className="bg-yellow-500 text-white shadow-sm px-3 py-1 text-sm w-fit">
+                  ⭐ Featured
                 </Badge>
               )}
             </div>
           </div>
-          <div className="mt-6 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+          <div className="mt-4 h-px bg-gray-200"></div>
         </DialogHeader>
 
-        <div className="p-8 pt-4 space-y-8">
+        <div className="p-4 sm:p-6 pt-2 space-y-4 sm:space-y-6">
           {/* Action buttons */}
-          <div className="flex gap-3 justify-center">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <Button
               variant="outline"
               onClick={handleFavoriteClick}
-              className={`flex items-center gap-2 ${
+              className={`flex items-center gap-2 text-sm ${
                 isFavorited(listing.id) 
                   ? 'bg-red-50 border-red-300 text-red-600 hover:bg-red-100' 
                   : 'hover:bg-gray-50'
               }`}
             >
               <Heart className={`h-4 w-4 ${isFavorited(listing.id) ? 'fill-current' : ''}`} />
-              {isFavorited(listing.id) ? 'Remove from Favorites' : 'Add to Favorites'}
-            </Button>
-            <Button variant="outline" onClick={handleShareClick} className="flex items-center gap-2">
-              <Share2 className="h-4 w-4" />
-              Share
+              <span className="hidden sm:inline">{isFavorited(listing.id) ? 'Remove from Favorites' : 'Add to Favorites'}</span>
+              <span className="sm:hidden">{isFavorited(listing.id) ? 'Remove' : 'Favorite'}</span>
             </Button>
           </div>
 
           {/* Main Image */}
           {listing.images && listing.images.length > 0 && (
-            <div className="mb-6">
+            <div className="mb-4 sm:mb-6">
               <OptimizedImage
                 src={listing.images[0]}
                 alt={`${listing.title}`}
-                className="w-full h-64 sm:h-80 lg:h-96 object-cover rounded-lg"
+                className="w-full h-48 sm:h-64 lg:h-80 object-cover rounded-lg"
                 width={800}
                 height={600}
                 priority={true}
                 listingType={listing.type}
               />
               {listing.images.length > 1 && (
-                <p className="text-sm text-gray-500 mt-2 text-center">
+                <p className="text-xs sm:text-sm text-gray-500 mt-2 text-center">
                   1 of {listing.images.length} photos available
                 </p>
               )}
             </div>
           )}
 
-          {/* Modern Description */}
-          <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/30 shadow-lg">
-            <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Description</h3>
-            <p className="text-gray-700 leading-relaxed text-lg">
+          {/* Description */}
+          <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+            <h3 className="text-lg sm:text-xl font-bold mb-3 text-gray-900">Description</h3>
+            <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
               {listing.description}
             </p>
           </div>
 
-          {/* Modern Features */}
-          <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/30 shadow-lg">
-            <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Features & Amenities</h3>
-            <div className="flex flex-wrap gap-3">
+          {/* Features */}
+          <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+            <h3 className="text-lg sm:text-xl font-bold mb-3 text-gray-900">Features</h3>
+            <div className="flex flex-wrap gap-2">
               {listing.features.map((feature, index) => (
                 <Badge 
                   key={index} 
-                  className="bg-gradient-to-r from-primary/10 to-accent/10 text-primary border border-primary/20 px-4 py-2 text-sm font-medium hover:from-primary/20 hover:to-accent/20 transition-all duration-300"
+                  className="bg-blue-100 text-blue-800 border-blue-200 px-3 py-1 text-xs sm:text-sm"
                 >
                   {feature}
                 </Badge>
@@ -166,18 +161,17 @@ const ListingModal = ({ listing, isOpen, onClose }: ListingModalProps) => {
             </div>
           )}
 
-          {/* Modern Contact Section */}
-          <div className="bg-gradient-to-br from-green-50/80 to-emerald-50/80 backdrop-blur-sm rounded-2xl p-8 border border-green-200/30 shadow-lg">
+          {/* Contact Section */}
+          <div className="bg-green-50 rounded-lg p-4 sm:p-6 border border-green-200">
             <div className="text-center">
-              <h3 className="text-3xl font-bold mb-4 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                Interested in this {listing.type}?
-              </h3>
-              <p className="text-gray-600 mb-6 text-lg leading-relaxed max-w-2xl mx-auto">
-                Ready to make this yours? Contact us via WhatsApp for instant responses, detailed information, 
-                or to schedule a personal viewing at your convenience.
-              </p>
+              <h3 className="text-lg sm:text-xl font-bold mb-2 text-green-800">Interested in this {listing.type}?</h3>
+              <p className="text-gray-600 mb-4 text-sm sm:text-base">Contact us to schedule a viewing or get more information.</p>
+              <div className="flex items-center justify-center text-green-700 mb-4">
+                <MessageCircle className="h-4 w-4 mr-2" />
+                <span className="font-medium text-sm sm:text-base">{listing.whatsappNumber}</span>
+              </div>
               <Button 
-                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border-0 px-8 py-4 text-lg rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 font-semibold"
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 text-sm sm:text-base font-medium w-full sm:w-auto"
                 onClick={handleWhatsAppClick}
               >
                 <MessageCircle className="h-6 w-6 mr-3" />
