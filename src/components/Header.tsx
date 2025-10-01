@@ -7,23 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-
-  // Check admin status when user changes
-  useEffect(() => {
-    const checkAdminStatus = async () => {
-      if (user) {
-        const { data, error } = await supabase.rpc('get_current_user_admin_status');
-        setIsAdmin(!error && data === true);
-      } else {
-        setIsAdmin(false);
-      }
-    };
-
-    checkAdminStatus();
-  }, [user]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -87,12 +72,7 @@ export const Header = () => {
           <a href="#about" className="text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors">
             About Us
           </a>
-          {isAdmin && (
-            <Link to="/admin" className="text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors flex items-center gap-1">
-              <Settings className="h-4 w-4" />
-              Admin
-            </Link>
-          )}
+
         </nav>
 
         {/* Desktop CTA Section */}
@@ -167,7 +147,6 @@ export const Header = () => {
                 <div className="space-y-2">
                   <div className="px-3 py-2 text-sm text-gray-600">
                     Welcome, {user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'}
-                    {isAdmin && <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">Admin</span>}
                   </div>
                   <Link to="/favorites" onClick={() => setIsMenuOpen(false)}>
                     <Button variant="ghost" className="w-full justify-start text-base py-3">
@@ -175,14 +154,7 @@ export const Header = () => {
                       Saved Cars
                     </Button>
                   </Link>
-                  {isAdmin && (
-                    <Link to="/admin" onClick={() => setIsMenuOpen(false)}>
-                      <Button variant="ghost" className="w-full justify-start text-base py-3">
-                        <Settings className="h-5 w-5 mr-3" />
-                        Admin Panel
-                      </Button>
-                    </Link>
-                  )}
+
                   <Button variant="outline" className="w-full text-base py-3" onClick={() => { handleSignOut(); setIsMenuOpen(false); }}>
                     <LogOut className="h-5 w-5 mr-3" />
                     Sign Out

@@ -1,6 +1,5 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
-import SearchSection from "@/components/SearchSection";
 import ListingsGrid from "@/components/ListingsGrid";
 
 const Index = () => {

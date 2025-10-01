@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { MapPin, MessageCircle, X, Car, Home } from "lucide-react";
 import { Listing } from "@/data/listings";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+
 import OptimizedImage from "@/components/OptimizedImage";
 
 interface ListingModalProps {

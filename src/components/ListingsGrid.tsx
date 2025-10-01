@@ -1,9 +1,8 @@
 import React, { useState, useMemo, useCallback, useEffect } from "react";
 import ListingCard from "./ListingCard";
 import ListingModal from "./ListingModal";
-import AdvancedSearchFilters, { AdvancedFilters } from "./AdvancedSearchFilters";
+import SimpleSearchFilters, { SimpleFilters } from "./SimpleSearchFilters";
 import { useListings, useFeaturedListings, type Listing } from "@/hooks/useListings";
-import { usePerformanceMonitoring, useQueryPerformanceMonitoring } from "@/hooks/usePerformanceMonitoring";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { useFavorites } from "@/hooks/useFavorites";
 import { Loader2, Search, Car, Home, Filter, X, Star } from "lucide-react";
@@ -33,30 +32,17 @@ export const ListingsGrid = () => {
   const { data: featuredData, isLoading: featuredLoading } = useFeaturedListings();
   const { data, fetchNextPage, hasNextPage, isLoading, isFetchingNextPage } = useListings();
   
-  // Performance monitoring
-  usePerformanceMonitoring('ListingsGrid');
-  useQueryPerformanceMonitoring(['listings', 'all'], data, isLoading);
-  useQueryPerformanceMonitoring(['listings', 'featured'], featuredData, featuredLoading);
-  
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [showFeaturedFirst, setShowFeaturedFirst] = useState(true);
 
-  const [filters, setFilters] = useState<AdvancedFilters>({
+  const [filters, setFilters] = useState<SimpleFilters>({
     searchQuery: '',
     type: 'all',
     location: '',
     priceMin: 0,
     priceMax: 50000000,
-    yearMin: undefined,
-    yearMax: undefined,
-    condition: [],
-    transmission: [],
-    fuelType: [],
-    propertyType: [],
-    bedrooms: '',
-    features: []
   });
 
   // Debounce search query for better performance
@@ -109,69 +95,32 @@ export const ListingsGrid = () => {
   const filteredListings = useMemo(() => {
     if (!allListings.length) return [];
     
-    // Pre-compile search query for better performance
+    // Simple, fast filtering
     const searchQuery = debouncedSearchQuery?.toLowerCase();
     const hasLocationFilter = filters.location?.toLowerCase();
-    const hasFilters = filters.type !== 'all' || searchQuery || hasLocationFilter || 
-                       filters.condition.length > 0 || filters.transmission.length > 0 || 
-                       filters.fuelType.length > 0 || filters.propertyType.length > 0 || 
-                       filters.features.length > 0 || filters.bedrooms;
     
     // If no filters, return all listings immediately
-    if (!hasFilters && filters.priceMin === 0 && filters.priceMax === 50000000) {
+    if (!searchQuery && !hasLocationFilter && filters.type === 'all' && 
+        filters.priceMin === 0 && filters.priceMax === 50000000) {
       return allListings;
     }
     
     return allListings.filter((listing) => {
-      // Type filter - fastest check first
+      // Type filter
       if (filters.type !== 'all' && listing.type !== filters.type) return false;
       
-      // Price filter - numeric comparison is fast
+      // Price filter
       if (listing.price < filters.priceMin || listing.price > filters.priceMax) return false;
       
-      // Search query (debounced) - expensive string operations
+      // Search query - simple text matching
       if (searchQuery) {
-        const titleMatch = listing.title.toLowerCase().includes(searchQuery);
-        if (!titleMatch) {
-          const locationMatch = listing.location.toLowerCase().includes(searchQuery);
-          if (!locationMatch && listing.description) {
-            const descMatch = listing.description.toLowerCase().includes(searchQuery);
-            if (!descMatch) return false;
-          } else if (!locationMatch) {
-            return false;
-          }
-        }
+        const searchableText = `${listing.title} ${listing.location}`.toLowerCase();
+        if (!searchableText.includes(searchQuery)) return false;
       }
       
       // Location filter
       if (hasLocationFilter && !listing.location.toLowerCase().includes(hasLocationFilter)) {
         return false;
-      }
-      
-      // Specification filters - only check if we have specifications
-      const specs = listing.specifications;
-      if (specs) {
-        // Year filter
-        if ((filters.yearMin && specs.year && specs.year < filters.yearMin) ||
-            (filters.yearMax && specs.year && specs.year > filters.yearMax)) return false;
-        
-        // Enum filters - batch check
-        if ((filters.condition.length > 0 && (!specs.condition || !filters.condition.includes(specs.condition))) ||
-            (filters.transmission.length > 0 && (!specs.transmission || !filters.transmission.includes(specs.transmission))) ||
-            (filters.fuelType.length > 0 && (!specs.fuelType || !filters.fuelType.includes(specs.fuelType))) ||
-            (filters.propertyType.length > 0 && (!specs.propertyType || !filters.propertyType.includes(specs.propertyType))) ||
-            (filters.bedrooms && (!specs.bedrooms || specs.bedrooms.toString() !== filters.bedrooms))) {
-          return false;
-        }
-      } else if (filters.condition.length > 0 || filters.transmission.length > 0 || 
-                 filters.fuelType.length > 0 || filters.propertyType.length > 0 || filters.bedrooms) {
-        return false;
-      }
-      
-      // Features filter - most expensive, do last
-      if (filters.features.length > 0) {
-        const features = listing.features || [];
-        if (!filters.features.every(feature => features.includes(feature))) return false;
       }
       
       return true;
@@ -206,14 +155,6 @@ export const ListingsGrid = () => {
       location: '',
       priceMin: 0,
       priceMax: 50000000,
-      yearMin: undefined,
-      yearMax: undefined,
-      condition: [],
-      transmission: [],
-      fuelType: [],
-      propertyType: [],
-      bedrooms: '',
-      features: []
     });
   };
 
@@ -303,7 +244,7 @@ export const ListingsGrid = () => {
                   <X className="h-4 w-4" />
                 </Button>
               </div>
-              <AdvancedSearchFilters
+              <SimpleSearchFilters
                 filters={filters}
                 onFiltersChange={setFilters}
                 onSearch={handleSearch}
@@ -318,9 +259,7 @@ export const ListingsGrid = () => {
           <p className="text-sm sm:text-base text-muted-foreground">
             {filteredListings.length} of {allListings.length} listings
           </p>
-          {(filters.searchQuery || filters.location || filters.condition.length > 0 || 
-            filters.transmission.length > 0 || filters.fuelType.length > 0 || 
-            filters.propertyType.length > 0 || filters.features.length > 0) && (
+          {(filters.searchQuery || filters.location) && (
             <Button variant="ghost" size="sm" onClick={handleResetFilters} className="text-xs sm:text-sm">
               <X className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
               Clear all filters

@@ -5,7 +5,7 @@ import { MapPin, Car, Home, MessageCircle, Star, Eye, Share2, Phone, Gauge, Cale
 import { Listing } from "@/data/listings";
 import { useState } from "react";
 import { useFavorites } from "@/hooks/useFavorites";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+
 import OptimizedImage from "@/components/OptimizedImage";
 
 interface ListingCardProps {

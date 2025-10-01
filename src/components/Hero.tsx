@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Search, Car, Home, MapPin, Star, Shield, Clock, Award } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import CarSearchForm from "@/components/CarSearchForm";
 
 const Hero = () => {
   const scrollToSection = (sectionId: string) => {
@@ -39,9 +38,27 @@ const Hero = () => {
         </div>
       </div>
       
-      {/* Professional Search Form like Cars.com */}
-      <div className="relative z-20 container mx-auto px-4">
-        <CarSearchForm />
+      {/* Call-to-action buttons */}
+      <div className="relative z-20 container mx-auto px-4 text-center mt-8">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-lg mx-auto">
+          <Button 
+            size="lg" 
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 text-lg py-3"
+            onClick={() => scrollToSection('listings')}
+          >
+            <Car className="h-5 w-5 mr-2" />
+            Browse Cars
+          </Button>
+          <Button 
+            size="lg" 
+            variant="outline" 
+            className="border-white/30 text-white hover:bg-white/10 px-8 text-lg py-3"
+            onClick={() => scrollToSection('properties')}
+          >
+            <Home className="h-5 w-5 mr-2" />
+            Properties
+          </Button>
+        </div>
       </div>
 
       {/* Scroll indicator */}
